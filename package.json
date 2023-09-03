@@ -1,0 +1,21 @@
+{
+  "name": "4sight",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.html",
+  "module": "dist/index.js",
+  "main": "main.js",
+  "author": "",
+  "license": "ISC",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@parcel/transformer-typescript-tsc": "^2.9.3",
+    "parcel": "^2.9.3",
+    "typescript": "^5.2.2"
+  }
+}
