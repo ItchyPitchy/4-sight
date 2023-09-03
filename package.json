@@ -2,20 +2,22 @@
   "name": "4sight",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.html",
-  "module": "dist/index.js",
-  "main": "main.js",
   "author": "",
   "license": "ISC",
-  "types": "dist/index.d.ts",
+  "source": "src/index.html",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "start": "parcel",
-    "build": "parcel build",
+    "build": "rm -rf dist && parcel build --no-source-maps --public-url ./",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
     "@parcel/transformer-typescript-tsc": "^2.9.3",
+    "@parcel/validator-typescript": "^2.9.3",
+    "cosmiconfig": "^8.2.0",
+    "gh-pages": "6.0.0",
     "parcel": "^2.9.3",
-    "typescript": "^5.2.2"
+    "typescript": "5.2.2"
   }
 }
