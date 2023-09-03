@@ -1,9 +1,9 @@
-class $9916884f391d0701$export$2e2bcd8739ae039 {
+class $59f491b6ef347631$export$2e2bcd8739ae039 {
     constructor(){}
 }
 
 
-class $43c0c510e34c0483$export$5c761481ae48d9f2 extends (0, $9916884f391d0701$export$2e2bcd8739ae039) {
+class $8e9410f31142e453$export$5c761481ae48d9f2 extends (0, $59f491b6ef347631$export$2e2bcd8739ae039) {
     constructor(){
         super();
     }
@@ -11,7 +11,7 @@ class $43c0c510e34c0483$export$5c761481ae48d9f2 extends (0, $9916884f391d0701$ex
 
 
 
-class $445358991fdbc39e$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$export$2e2bcd8739ae039) {
+class $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039 extends (0, $59f491b6ef347631$export$2e2bcd8739ae039) {
     constructor(){
         super();
     }
@@ -22,7 +22,7 @@ class $445358991fdbc39e$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$exp
 
 
 
-class $f1e65341a636d6f6$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$export$2e2bcd8739ae039) {
+class $dc3bd1531f48aa58$export$2e2bcd8739ae039 extends (0, $59f491b6ef347631$export$2e2bcd8739ae039) {
     constructor(x, y, size, drawX, drawY){
         super();
         this.x = x;
@@ -38,7 +38,7 @@ class $f1e65341a636d6f6$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$exp
 }
 
 
-class $c54dd71351aab925$export$e1dae5660003ffa7 {
+class $a16d919c16107e31$export$e1dae5660003ffa7 {
     appliesTo(entity) {
         return false;
     }
@@ -49,7 +49,7 @@ class $c54dd71351aab925$export$e1dae5660003ffa7 {
 }
 
 
-class $db6073af7618b5a0$export$2e2bcd8739ae039 extends (0, $c54dd71351aab925$export$e1dae5660003ffa7) {
+class $92cb8d34f46a8ef8$export$2e2bcd8739ae039 extends (0, $a16d919c16107e31$export$e1dae5660003ffa7) {
     constructor(){
         super();
         this.keys = new Set();
@@ -71,10 +71,10 @@ class $db6073af7618b5a0$export$2e2bcd8739ae039 extends (0, $c54dd71351aab925$exp
         });
     }
     appliesTo(entity) {
-        return entity instanceof (0, $f1e65341a636d6f6$export$2e2bcd8739ae039);
+        return entity instanceof (0, $dc3bd1531f48aa58$export$2e2bcd8739ae039);
     }
     update(entities, dt, game) {
-        const playerCell = entities.find((cell)=>cell.entities.find((entity)=>entity instanceof (0, $43c0c510e34c0483$export$5c761481ae48d9f2)));
+        const playerCell = entities.find((cell)=>cell.entities.find((entity)=>entity instanceof (0, $8e9410f31142e453$export$5c761481ae48d9f2)));
         if (!playerCell) return;
         let moveToCell = null;
         if (this.keys.has("w")) {
@@ -94,15 +94,15 @@ class $db6073af7618b5a0$export$2e2bcd8739ae039 extends (0, $c54dd71351aab925$exp
             this.keys.delete("d");
         }
         if (moveToCell) {
-            moveToCell.addEntity(new (0, $43c0c510e34c0483$export$5c761481ae48d9f2)());
-            playerCell.entities = playerCell.entities.filter((entity)=>!(entity instanceof (0, $43c0c510e34c0483$export$5c761481ae48d9f2)));
+            moveToCell.addEntity(new (0, $8e9410f31142e453$export$5c761481ae48d9f2)());
+            playerCell.entities = playerCell.entities.filter((entity)=>!(entity instanceof (0, $8e9410f31142e453$export$5c761481ae48d9f2)));
         }
     }
 }
 
 
 
-class $3447bb03a7b2346b$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$export$2e2bcd8739ae039) {
+class $63806e1430ca4a0e$export$2e2bcd8739ae039 extends (0, $59f491b6ef347631$export$2e2bcd8739ae039) {
     constructor(startPos, endPos){
         super();
         this.startPos = startPos;
@@ -123,7 +123,7 @@ class $3447bb03a7b2346b$export$2e2bcd8739ae039 extends (0, $9916884f391d0701$exp
 
 
 
-class $66f194f99a5b7011$export$2e2bcd8739ae039 {
+class $1f3fa80631858f83$export$2e2bcd8739ae039 {
     constructor(){
         this.bullets = [];
     }
@@ -142,7 +142,7 @@ class $66f194f99a5b7011$export$2e2bcd8739ae039 {
 
 
 
-class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$export$e1dae5660003ffa7) {
+class $613a552ca50080c4$export$ca8fcbfa0c11ecda extends (0, $a16d919c16107e31$export$e1dae5660003ffa7) {
     constructor(){
         super();
         this.keys = new Set();
@@ -150,7 +150,7 @@ class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$ex
         this.startPos = null;
         this.aimPos = null;
         this.nearestIntersection = null;
-        this.bulletSystem = new (0, $66f194f99a5b7011$export$2e2bcd8739ae039)();
+        this.bulletSystem = new (0, $1f3fa80631858f83$export$2e2bcd8739ae039)();
         document.querySelector("#gameScreen").addEventListener("click", (e)=>{
             this.keys.add("leftClick");
         });
@@ -162,10 +162,10 @@ class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$ex
         });
     }
     appliesTo(entity) {
-        return entity instanceof (0, $f1e65341a636d6f6$export$2e2bcd8739ae039) && Boolean(entity.entities.find((entity)=>entity instanceof (0, $445358991fdbc39e$export$2e2bcd8739ae039) || entity instanceof (0, $43c0c510e34c0483$export$5c761481ae48d9f2)));
+        return entity instanceof (0, $dc3bd1531f48aa58$export$2e2bcd8739ae039) && Boolean(entity.entities.find((entity)=>entity instanceof (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039) || entity instanceof (0, $8e9410f31142e453$export$5c761481ae48d9f2)));
     }
     update(entities, dt, game) {
-        const playerCell = entities.find((cell)=>cell.entities.find((entity)=>entity instanceof (0, $43c0c510e34c0483$export$5c761481ae48d9f2)));
+        const playerCell = entities.find((cell)=>cell.entities.find((entity)=>entity instanceof (0, $8e9410f31142e453$export$5c761481ae48d9f2)));
         if (!playerCell) return;
         this.startPos = {
             x: playerCell.drawX + playerCell.size / 2,
@@ -197,7 +197,7 @@ class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$ex
             intersectionX: x1,
             intersectionY: y1
         };
-        const obstacleCells = entities.filter((cell)=>cell.entities.find((entity)=>entity instanceof (0, $445358991fdbc39e$export$2e2bcd8739ae039)));
+        const obstacleCells = entities.filter((cell)=>cell.entities.find((entity)=>entity instanceof (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)));
         for (const cell of obstacleCells){
             const sx = cell.drawX; // square position
             const sy = cell.drawY;
@@ -237,7 +237,7 @@ class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$ex
         }
         this.nearestIntersection = nearestIntersection;
         if (this.keys.has("leftClick")) {
-            this.bulletSystem.addBullets(new (0, $3447bb03a7b2346b$export$2e2bcd8739ae039)({
+            this.bulletSystem.addBullets(new (0, $63806e1430ca4a0e$export$2e2bcd8739ae039)({
                 x: this.startPos.x,
                 y: this.startPos.y
             }, {
@@ -314,12 +314,12 @@ class $63473784a2acb361$export$ca8fcbfa0c11ecda extends (0, $c54dd71351aab925$ex
 
 
 
-class $afc0584681456a73$export$ca664994d1d54bff {
+class $b8c187bedfb11da5$export$ca664994d1d54bff {
     constructor(structure){
         this.structure = structure;
         this.systems = [
-            new (0, $63473784a2acb361$export$ca8fcbfa0c11ecda)(),
-            new (0, $db6073af7618b5a0$export$2e2bcd8739ae039)()
+            new (0, $613a552ca50080c4$export$ca8fcbfa0c11ecda)(),
+            new (0, $92cb8d34f46a8ef8$export$2e2bcd8739ae039)()
         ];
         this.board = null;
         this.offsetX = 0;
@@ -339,7 +339,7 @@ class $afc0584681456a73$export$ca664994d1d54bff {
                 const maximumBoardSizeAxis = "x";
                 const maximumBoardSize = 15; // Don't hardcode this!!!
                 const maximumCellSize = minimumGameSize / maximumBoardSize;
-                const cell = new (0, $f1e65341a636d6f6$export$2e2bcd8739ae039)(position.x, position.y, maximumCellSize, maximumCellSize * position.x, maximumCellSize * position.y);
+                const cell = new (0, $dc3bd1531f48aa58$export$2e2bcd8739ae039)(position.x, position.y, maximumCellSize, maximumCellSize * position.x, maximumCellSize * position.y);
                 if (obstacle !== null) cell.entities = [
                     ...cell.entities,
                     ...obstacle
@@ -365,11 +365,11 @@ class $afc0584681456a73$export$ca664994d1d54bff {
                 y: cell.drawY
             };
             ctx.beginPath();
-            if (cell.entities.find((entity)=>entity instanceof (0, $445358991fdbc39e$export$2e2bcd8739ae039))) {
+            if (cell.entities.find((entity)=>entity instanceof (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039))) {
                 ctx.fillStyle = "#000";
                 ctx.fillRect(drawPosition.x, drawPosition.y, cell.size, cell.size);
                 ctx.fill();
-            } else if (cell.entities.find((entity)=>entity instanceof (0, $43c0c510e34c0483$export$5c761481ae48d9f2))) {
+            } else if (cell.entities.find((entity)=>entity instanceof (0, $8e9410f31142e453$export$5c761481ae48d9f2))) {
                 ctx.fillStyle = "#543";
                 ctx.fillRect(drawPosition.x, drawPosition.y, cell.size, cell.size);
                 ctx.fill();
@@ -385,7 +385,7 @@ class $afc0584681456a73$export$ca664994d1d54bff {
 }
 
 
-class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$export$ca664994d1d54bff) {
+class $4b43ca9b7c0bafb6$export$2e720d0366b6ecb3 extends (0, $b8c187bedfb11da5$export$ca664994d1d54bff) {
     constructor(){
         const structure = [
             [
@@ -409,7 +409,7 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null,
@@ -421,38 +421,7 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                null,
-                null
-            ],
-            [
-                null,
-                null,
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                null,
-                null,
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                null,
-                null,
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null
@@ -461,40 +430,29 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
-                null,
-                null
-            ],
-            [
-                null,
-                null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null
@@ -503,29 +461,19 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null,
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
-                [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
-                ],
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null
@@ -534,7 +482,7 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null,
@@ -546,7 +494,59 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $445358991fdbc39e$export$2e2bcd8739ae039)()
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                null,
+                null
+            ],
+            [
+                null,
+                null,
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                null,
+                null,
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                null,
+                null,
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                null,
+                null
+            ],
+            [
+                null,
+                null,
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
+                ],
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                [
+                    new (0, $4dcaaa5ef2ef6fe6$export$2e2bcd8739ae039)()
                 ],
                 null,
                 null
@@ -560,7 +560,7 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
                 null,
                 null,
                 [
-                    new (0, $43c0c510e34c0483$export$5c761481ae48d9f2)()
+                    new (0, $8e9410f31142e453$export$5c761481ae48d9f2)()
                 ],
                 null,
                 null,
@@ -576,12 +576,12 @@ class $98fa25b192398044$export$2e720d0366b6ecb3 extends (0, $afc0584681456a73$ex
 }
 
 
-class $6fd77ca8835d8a00$export$2e2bcd8739ae039 {
+class $f4638752e9070b0c$export$2e2bcd8739ae039 {
     constructor(gameWidth, gameHeight, ctx){
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
         this.ctx = ctx;
-        this.level = new (0, $98fa25b192398044$export$2e720d0366b6ecb3)();
+        this.level = new (0, $4b43ca9b7c0bafb6$export$2e720d0366b6ecb3)();
         this.systems = [];
         this.entities = [];
         this.start();
@@ -603,24 +603,23 @@ class $6fd77ca8835d8a00$export$2e2bcd8739ae039 {
 }
 
 
-const $f61545d4b1541a05$var$canvas = document.querySelector("#gameScreen");
-const $f61545d4b1541a05$var$ctx = $f61545d4b1541a05$var$canvas.getContext("2d");
+const $2d2a0abc54e1761f$var$canvas = document.querySelector("#gameScreen");
+const $2d2a0abc54e1761f$var$ctx = $2d2a0abc54e1761f$var$canvas.getContext("2d");
 // ctx.imageSmoothingEnabled = true;
 // ctx.imageSmoothingQuality = "high";
-const $f61545d4b1541a05$var$GAME_WIDTH = 800;
-const $f61545d4b1541a05$var$GAME_HEIGHT = 800;
-const $f61545d4b1541a05$var$game = new (0, $6fd77ca8835d8a00$export$2e2bcd8739ae039)($f61545d4b1541a05$var$GAME_WIDTH, $f61545d4b1541a05$var$GAME_HEIGHT, $f61545d4b1541a05$var$ctx);
-let $f61545d4b1541a05$var$oldTimeStamp = 0;
-function $f61545d4b1541a05$var$gameLoop(timestamp) {
+const $2d2a0abc54e1761f$var$GAME_WIDTH = 800;
+const $2d2a0abc54e1761f$var$GAME_HEIGHT = 800;
+const $2d2a0abc54e1761f$var$game = new (0, $f4638752e9070b0c$export$2e2bcd8739ae039)($2d2a0abc54e1761f$var$GAME_WIDTH, $2d2a0abc54e1761f$var$GAME_HEIGHT, $2d2a0abc54e1761f$var$ctx);
+let $2d2a0abc54e1761f$var$oldTimeStamp = 0;
+function $2d2a0abc54e1761f$var$gameLoop(timestamp) {
     // dt i sekunder
-    let dt = (timestamp - $f61545d4b1541a05$var$oldTimeStamp) / 1000;
-    $f61545d4b1541a05$var$oldTimeStamp = timestamp;
-    $f61545d4b1541a05$var$ctx.clearRect(0, 0, $f61545d4b1541a05$var$GAME_WIDTH, $f61545d4b1541a05$var$GAME_HEIGHT);
-    $f61545d4b1541a05$var$game.update(dt);
-    $f61545d4b1541a05$var$game.draw($f61545d4b1541a05$var$ctx);
-    requestAnimationFrame($f61545d4b1541a05$var$gameLoop);
+    let dt = (timestamp - $2d2a0abc54e1761f$var$oldTimeStamp) / 1000;
+    $2d2a0abc54e1761f$var$oldTimeStamp = timestamp;
+    $2d2a0abc54e1761f$var$ctx.clearRect(0, 0, $2d2a0abc54e1761f$var$GAME_WIDTH, $2d2a0abc54e1761f$var$GAME_HEIGHT);
+    $2d2a0abc54e1761f$var$game.update(dt);
+    $2d2a0abc54e1761f$var$game.draw($2d2a0abc54e1761f$var$ctx);
+    requestAnimationFrame($2d2a0abc54e1761f$var$gameLoop);
 }
-requestAnimationFrame($f61545d4b1541a05$var$gameLoop);
+requestAnimationFrame($2d2a0abc54e1761f$var$gameLoop);
 
 
-//# sourceMappingURL=index.js.map
