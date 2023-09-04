@@ -37,8 +37,6 @@ export default class Board {
     const cellWidth = this.gameWidth / (this.size + 1);
     const cellHeight = this.gameHeight / (this.size + 1); // HAcky
 
-    console.log(this.board);
-
     for (const row of this.board) {
       for (const cell of row) {
         ctx.beginPath();

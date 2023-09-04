@@ -1,3 +1,4 @@
+import { Vector } from "../Component/Vector";
 import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
@@ -62,15 +63,15 @@ export class ShootSystem extends System {
     if (!playerCell) return;
 
     this.startPos = {
-      x: playerCell.drawX + playerCell.size / 2,
-      y: playerCell.drawY + playerCell.size / 2,
+      x: playerCell.drawPosition.x + playerCell.size / 2,
+      y: playerCell.drawPosition.y + playerCell.size / 2,
     };
 
     if (!this.mousePos) return;
 
     const vector = {
-      x: this.mousePos.x - (playerCell.drawX + playerCell.size / 2),
-      y: this.mousePos.y - (playerCell.drawY + playerCell.size / 2),
+      x: this.mousePos.x - (playerCell.drawPosition.x + playerCell.size / 2),
+      y: this.mousePos.y - (playerCell.drawPosition.y + playerCell.size / 2),
     };
     const mousePosBasedMagnitude = Math.sqrt(
       Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
@@ -118,8 +119,8 @@ export class ShootSystem extends System {
     );
 
     for (const cell of obstacleCells) {
-      const sx: number = cell.drawX; // square position
-      const sy: number = cell.drawY;
+      const sx: number = cell.drawPosition.x; // square position
+      const sy: number = cell.drawPosition.y;
       const sw: number = cell.size; // and size
       const sh: number = cell.size;
 
@@ -173,20 +174,16 @@ export class ShootSystem extends System {
     this.nearestIntersection = nearestIntersection;
 
     if (this.keys.has("leftClick")) {
-      this.bulletSystem.addBullets(
-        new Bullet(
-          { x: this.startPos.x, y: this.startPos.y },
-          {
-            x: this.nearestIntersection.intersectionX,
-            y: this.nearestIntersection.intersectionY,
-          }
-        )
-      );
+      const bullet = new Bullet({ x: this.startPos.x, y: this.startPos.y });
+      bullet.addComponents(new Vector(norm.x * 1000, norm.y * 1000));
+      this.bulletSystem.addBullets(bullet);
 
       this.keys.delete("leftClick");
     }
 
-    this.bulletSystem.update(dt);
+    const cellEntities = entities.flatMap((cell) => cell.entities);
+
+    this.bulletSystem.update(cellEntities, dt, game);
   }
 
   draw(ctx: CanvasRenderingContext2D) {

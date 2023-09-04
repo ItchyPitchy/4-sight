@@ -1,21 +1,17 @@
 import Entity from "./Entity";
 
 export default class Bullet extends Entity {
-  lifeLength = 0.5; // seconds
+  lifeLength = 5; // seconds
 
-  constructor(
-    readonly startPos: { x: number; y: number },
-    readonly endPos: { x: number; y: number }
-  ) {
-    super();
+  constructor(drawPosition: { x: number; y: number }) {
+    super(drawPosition);
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    // draw the line
-    ctx.strokeStyle = "red";
+    // draw intersection dot
+    ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.moveTo(this.startPos.x, this.startPos.y);
-    ctx.lineTo(this.endPos.x, this.endPos.y);
-    ctx.stroke();
+    ctx.arc(this.drawPosition.x, this.drawPosition.y, 5, 0, 2 * Math.PI);
+    ctx.fill();
   }
 }

@@ -1,16 +1,10 @@
 import Component from "../Component/Component";
+import Entity from "./Entity";
 
-export default class Entity {
+export default class CellEntity {
   components: Component[] = [];
 
-  constructor(public drawPosition: { x: number; y: number }) {}
-
-  distanceTo(entity: Entity) {
-    return Math.sqrt(
-      Math.pow(this.drawPosition.x - entity.drawPosition.x, 2) +
-        Math.pow(this.drawPosition.y - entity.drawPosition.y, 2)
-    );
-  }
+  constructor() {}
 
   getComponent(type: Component) {
     for (const component of this.components) {
@@ -35,8 +29,6 @@ export default class Entity {
         return true;
       }
     }
-
-    return false;
   }
 
   removeComponent<T extends Component>(type: T) {
@@ -46,7 +38,9 @@ export default class Entity {
     );
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    throw new Error("Not implemented yet");
-  }
+  draw(
+    ctx: CanvasRenderingContext2D,
+    cellPosition: { x: number; y: number },
+    cellSize: number
+  ): void {}
 }

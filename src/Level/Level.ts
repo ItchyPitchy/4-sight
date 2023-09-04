@@ -1,4 +1,3 @@
-import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import Wall from "../Entity/Wall";
 import MoveSystem from "../System/MoveSystem";
@@ -7,94 +6,91 @@ import { System } from "../System/System";
 import Game from "../game";
 import Cell from "./Cell";
 
-type Board = Array<Array<Cell>>;
-
 export class Level {
   systems: System[] = [new ShootSystem(), new MoveSystem()];
-  board: Board | null = null;
+  cells: Cell[] = [];
   offsetX = 0;
   offsetY = 0;
 
-  constructor(readonly structure: Array<Array<Entity[] | null>>) {}
+  constructor(
+    readonly structure: Array<Array<Array<{ type: string }> | null>>
+  ) {}
 
   buildLevel(gameWidth: number, gameHeight: number) {
-    const generatedBoard: Board = [];
+    const cells: Cell[] = [];
+
+    const rowLength = this.structure[0].length;
+    const columnLength = this.structure.length;
+
+    for (const row of this.structure) {
+      if (row.length !== rowLength)
+        throw new Error("Not all rows in level structure have the same size");
+    }
+
+    const gameWidthHeightRatio = gameWidth / gameHeight;
+    const levelWidthHeightRatio = rowLength / columnLength;
+    let cellSize = 0;
+
+    if (gameWidthHeightRatio < levelWidthHeightRatio) {
+      cellSize = gameWidth / rowLength;
+      this.offsetX = 0;
+      this.offsetY = (gameHeight - cellSize * columnLength) / 2;
+    } else {
+      cellSize = gameHeight / columnLength;
+      this.offsetX = (gameWidth - cellSize * rowLength) / 2;
+      this.offsetY = 0;
+    }
+
+    if (cellSize <= 0) {
+      throw new Error("Cell size less than 0");
+    }
 
     this.structure.forEach((row, rowIndex) => {
-      const generatedRow: Cell[] = [];
-
-      row.forEach((obstacle, obstacleIndex) => {
+      row.forEach((cellEntities, cellEntitiesIndex) => {
         const position = {
-          x: obstacleIndex,
+          x: cellEntitiesIndex,
           y: rowIndex,
         };
 
-        const minimumGameSizeAxis = gameWidth < gameHeight ? "x" : "y";
-        const minimumGameSize =
-          minimumGameSizeAxis === "x" ? gameWidth : gameHeight;
+        const cell = new Cell(position.x, position.y, cellSize, {
+          x: cellSize * position.x + this.offsetX,
+          y: cellSize * position.y + this.offsetY,
+        });
 
-        const maximumBoardSizeAxis = "x";
-        const maximumBoardSize = 15; // Don't hardcode this!!!
-        const maximumCellSize = minimumGameSize / maximumBoardSize;
-
-        const cell = new Cell(
-          position.x,
-          position.y,
-          maximumCellSize,
-          maximumCellSize * position.x,
-          maximumCellSize * position.y
-        );
-
-        if (obstacle !== null) {
-          cell.entities = [...cell.entities, ...obstacle];
+        if (cellEntities !== null) {
+          for (const cellEntity of cellEntities) {
+            switch (cellEntity.type) {
+              case "player": {
+                cell.addEntitys(new Player1());
+                break;
+              }
+              case "wall": {
+                cell.addEntitys(new Wall());
+                break;
+              }
+              default:
+                throw new Error("Invalid entity type");
+            }
+          }
         }
 
-        generatedRow.push(cell);
+        cells.push(cell);
       });
-
-      generatedBoard.push(generatedRow);
     });
 
-    this.board = generatedBoard;
+    this.cells = cells;
   }
 
   update(dt: number, game: Game) {
-    if (!this.board) return;
-
     for (const system of this.systems) {
-      const filteredEntities = this.board.flat().filter(system.appliesTo);
+      const filteredEntities = this.cells.filter(system.appliesTo);
       system.update(filteredEntities, dt, game);
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!this.board) return;
-
-    for (const row of this.board) {
-      for (const cell of row) {
-        const drawPosition = {
-          x: cell.drawX,
-          y: cell.drawY,
-        };
-
-        ctx.beginPath();
-
-        if (cell.entities.find((entity) => entity instanceof Wall)) {
-          ctx.fillStyle = "#000";
-          ctx.fillRect(drawPosition.x, drawPosition.y, cell.size, cell.size);
-          ctx.fill();
-        } else if (cell.entities.find((entity) => entity instanceof Player1)) {
-          ctx.fillStyle = "#543";
-          ctx.fillRect(drawPosition.x, drawPosition.y, cell.size, cell.size);
-          ctx.fill();
-        } else {
-          ctx.strokeStyle = "#000";
-          ctx.strokeRect(drawPosition.x, drawPosition.y, cell.size, cell.size);
-          ctx.stroke();
-        }
-
-        ctx.closePath();
-      }
+    for (const cell of this.cells) {
+      cell.draw(ctx);
     }
 
     for (const system of this.systems) {

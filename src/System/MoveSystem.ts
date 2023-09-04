@@ -1,3 +1,4 @@
+import CellEntity from "../Entity/CellEntity";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import Cell from "../Level/Cell";
@@ -28,14 +29,13 @@ export default class MoveSystem extends System {
     });
   }
 
-  appliesTo(entity: Entity) {
+  appliesTo(entity: Cell) {
     return entity instanceof Cell;
   }
 
   update(entities: Cell[], dt: number, game: Game) {
-    const playerCell = entities.find((cell) =>
-      cell.entities.find((entity) => entity instanceof Player1)
-    );
+    // @ts-ignore
+    const playerCell = entities.find((cell) => cell.getEntity(Player1));
 
     if (!playerCell) return;
 
@@ -74,10 +74,17 @@ export default class MoveSystem extends System {
     }
 
     if (moveToCell) {
-      moveToCell.addEntity(new Player1());
-      playerCell.entities = playerCell.entities.filter(
-        (entity) => !(entity instanceof Player1)
-      );
+      // @ts-ignore
+      const player = playerCell.getEntity(Player1);
+
+      if (!player) return;
+
+      const newPlayerInstance = new Player1();
+
+      moveToCell.addEntitys(newPlayerInstance);
+
+      // @ts-ignore
+      playerCell.removeEntity(Player1);
     }
   }
 }

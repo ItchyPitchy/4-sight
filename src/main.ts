@@ -5,8 +5,11 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 // ctx.imageSmoothingEnabled = true;
 // ctx.imageSmoothingQuality = "high";
 
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 800;
+const GAME_WIDTH = window.innerWidth;
+const GAME_HEIGHT = window.innerHeight;
+
+canvas.width = GAME_WIDTH;
+canvas.height = GAME_HEIGHT;
 
 const game = new Game(GAME_WIDTH, GAME_HEIGHT, ctx);
 

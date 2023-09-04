@@ -28,7 +28,7 @@ export default class Game {
   }
 
   update(dt: number) {
-    if (this.level.board) this.level.update(dt, this);
+    this.level.update(dt, this);
 
     for (const system of this.systems) {
       const filteredEntities = this.entities.filter(system.appliesTo);
