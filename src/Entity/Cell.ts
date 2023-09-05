@@ -1,6 +1,9 @@
-import CellEntity from "./Cell";
+import Component from "../Component/Component";
+import Entity from "./Entity";
 
-export default class Wall extends CellEntity {
+export default class Cell extends Entity {
+  components: Component[] = [];
+
   constructor(
     position: { x: number; y: number },
     size: { width: number; height: number }
@@ -10,14 +13,14 @@ export default class Wall extends CellEntity {
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
-    ctx.fillStyle = "#000";
-    ctx.fillRect(
+    ctx.strokeStyle = "#000";
+    ctx.strokeRect(
       this.position.x,
       this.position.y,
       this.size.width,
       this.size.height
     );
-    ctx.fill();
+    ctx.stroke();
     ctx.closePath();
   }
 }

@@ -3,12 +3,15 @@ import Component from "../Component/Component";
 export default class Entity {
   components: Component[] = [];
 
-  constructor(public drawPosition: { x: number; y: number }) {}
+  constructor(
+    public position: { x: number; y: number },
+    readonly size: { width: number; height: number }
+  ) {}
 
   distanceTo(entity: Entity) {
     return Math.sqrt(
-      Math.pow(this.drawPosition.x - entity.drawPosition.x, 2) +
-        Math.pow(this.drawPosition.y - entity.drawPosition.y, 2)
+      Math.pow(this.position.x - entity.position.x, 2) +
+        Math.pow(this.position.y - entity.position.y, 2)
     );
   }
 

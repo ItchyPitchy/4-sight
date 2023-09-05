@@ -1,12 +1,11 @@
-import { Vector } from "../Component/Vector";
+import Game from "../game";
+import { Level } from "../Level/Level";
+import { System } from "./System";
 import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
-import Wall from "../Entity/Wall";
-import Cell from "../Level/Cell";
-import Game from "../game";
-import BulletSystem from "./BulletSystem";
-import { System } from "./System";
+import { Hitbox } from "../Component/Hitbox";
+import { Vector } from "../Component/Vector";
 
 export class ShootSystem extends System {
   keys = new Set<"leftClick">();
@@ -23,7 +22,6 @@ export class ShootSystem extends System {
       sh: number;
     };
   } | null = null;
-  bulletSystem = new BulletSystem();
 
   constructor() {
     super();
@@ -45,145 +43,143 @@ export class ShootSystem extends System {
   }
 
   appliesTo(entity: Entity) {
-    return (
-      entity instanceof Cell &&
-      Boolean(
-        entity.entities.find(
-          (entity) => entity instanceof Wall || entity instanceof Player1
-        )
-      )
-    );
+    return entity instanceof Player1;
   }
 
-  update(entities: Cell[], dt: number, game: Game) {
-    const playerCell = entities.find((cell) =>
-      cell.entities.find((entity) => entity instanceof Player1)
-    );
+  update(entities: Player1[], dt: number, level: Level, game: Game) {
+    // const playerCell = entities.find((cell) =>
+    //   cell.entities.find((entity) => entity instanceof Player1)
+    // );
 
-    if (!playerCell) return;
+    // if (!playerCell) return;
 
-    this.startPos = {
-      x: playerCell.drawPosition.x + playerCell.size / 2,
-      y: playerCell.drawPosition.y + playerCell.size / 2,
-    };
-
-    if (!this.mousePos) return;
-
-    const vector = {
-      x: this.mousePos.x - (playerCell.drawPosition.x + playerCell.size / 2),
-      y: this.mousePos.y - (playerCell.drawPosition.y + playerCell.size / 2),
-    };
-    const mousePosBasedMagnitude = Math.sqrt(
-      Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
-    );
-    const norm = {
-      x: vector.x / mousePosBasedMagnitude,
-      y: vector.y / mousePosBasedMagnitude,
-    };
-
-    const magnitude = {
-      x:
-        norm.x *
-        Math.sqrt(Math.pow(game.gameWidth, 2) + Math.pow(game.gameHeight, 2)),
-      y:
-        norm.y *
-        Math.sqrt(Math.pow(game.gameWidth, 2) + Math.pow(game.gameHeight, 2)),
-    };
-
-    this.aimPos = {
-      x: this.startPos.x + magnitude.x,
-      y: this.startPos.y + magnitude.y,
-    };
-
-    const x1: number = this.aimPos.x; // points for line (controlled by mouse)
-    const y1: number = this.aimPos.y;
-    const x2: number = this.startPos.x; // static point
-    const y2: number = this.startPos.y;
-
-    let nearestIntersection: {
-      intersectionX: number;
-      intersectionY: number;
-      intersectedRect?: {
-        sx: number;
-        sy: number;
-        sw: number;
-        sh: number;
+    for (const entity of entities) {
+      this.startPos = {
+        x: entity.position.x + entity.size.width / 2,
+        y: entity.position.y + entity.size.height / 2,
       };
-    } = {
-      intersectionX: x1,
-      intersectionY: y1,
-    };
 
-    const obstacleCells = entities.filter((cell) =>
-      cell.entities.find((entity) => entity instanceof Wall)
-    );
+      if (!this.mousePos) return;
 
-    for (const cell of obstacleCells) {
-      const sx: number = cell.drawPosition.x; // square position
-      const sy: number = cell.drawPosition.y;
-      const sw: number = cell.size; // and size
-      const sh: number = cell.size;
+      const vector = {
+        x: this.mousePos.x - (entity.position.x + entity.size.width / 2),
+        y: this.mousePos.y - (entity.position.y + entity.size.height / 2),
+      };
+      const mousePosBasedMagnitude = Math.sqrt(
+        Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
+      );
+      const norm = {
+        x: vector.x / mousePosBasedMagnitude,
+        y: vector.y / mousePosBasedMagnitude,
+      };
 
-      // check if line has hit the square
-      // if so, change the fill color
-      const intersections = this.lineRect(x1, y1, x2, y2, sx, sy, sw, sh);
+      const magnitude = {
+        x:
+          norm.x *
+          Math.sqrt(Math.pow(game.gameWidth, 2) + Math.pow(game.gameHeight, 2)),
+        y:
+          norm.y *
+          Math.sqrt(Math.pow(game.gameWidth, 2) + Math.pow(game.gameHeight, 2)),
+      };
 
-      for (const intersection of intersections) {
-        const intersectionDistanceX = intersection.intersectionX - x2;
-        const intersectionDistanceY = intersection.intersectionY - y2;
-        const intersectionDistance = Math.sqrt(
-          Math.pow(intersectionDistanceX, 2) +
-            Math.pow(intersectionDistanceY, 2)
-        );
+      this.aimPos = {
+        x: this.startPos.x + magnitude.x,
+        y: this.startPos.y + magnitude.y,
+      };
 
-        const nearestIntersectionDistanceX =
-          nearestIntersection.intersectionX - x2;
-        const nearestIntersectionDistanceY =
-          nearestIntersection.intersectionY - y2;
-        const nearestIntersectionDistance = Math.sqrt(
-          Math.pow(nearestIntersectionDistanceX, 2) +
-            Math.pow(nearestIntersectionDistanceY, 2)
-        );
+      const x1: number = this.aimPos.x; // points for line (controlled by mouse)
+      const y1: number = this.aimPos.y;
+      const x2: number = this.startPos.x; // static point
+      const y2: number = this.startPos.y;
 
-        if (intersectionDistance < nearestIntersectionDistance) {
-          nearestIntersection = {
-            intersectionX: intersection.intersectionX,
-            intersectionY: intersection.intersectionY,
-            intersectedRect: {
-              sx,
-              sy,
-              sw,
-              sh,
-            },
-          };
+      let nearestIntersection: {
+        intersectionX: number;
+        intersectionY: number;
+        intersectedRect?: {
+          sx: number;
+          sy: number;
+          sw: number;
+          sh: number;
+        };
+      } = {
+        intersectionX: x1,
+        intersectionY: y1,
+      };
+
+      const obstacleCells = entities.filter((entity) =>
+        entity.hasComponent(Hitbox)
+      );
+
+      for (const cell of obstacleCells) {
+        const sx = cell.position.x; // square position
+        const sy = cell.position.y;
+        const sw = cell.size.width; // and size
+        const sh = cell.size.height;
+
+        // check if line has hit the square
+        // if so, change the fill color
+        const intersections = this.lineRect(x1, y1, x2, y2, sx, sy, sw, sh);
+
+        for (const intersection of intersections) {
+          const intersectionDistanceX = intersection.intersectionX - x2;
+          const intersectionDistanceY = intersection.intersectionY - y2;
+          const intersectionDistance = Math.sqrt(
+            Math.pow(intersectionDistanceX, 2) +
+              Math.pow(intersectionDistanceY, 2)
+          );
+
+          const nearestIntersectionDistanceX =
+            nearestIntersection.intersectionX - x2;
+          const nearestIntersectionDistanceY =
+            nearestIntersection.intersectionY - y2;
+          const nearestIntersectionDistance = Math.sqrt(
+            Math.pow(nearestIntersectionDistanceX, 2) +
+              Math.pow(nearestIntersectionDistanceY, 2)
+          );
+
+          if (intersectionDistance < nearestIntersectionDistance) {
+            nearestIntersection = {
+              intersectionX: intersection.intersectionX,
+              intersectionY: intersection.intersectionY,
+              intersectedRect: {
+                sx,
+                sy,
+                sw,
+                sh,
+              },
+            };
+          }
+
+          // ctx.fillStyle = "blue";
+          // ctx.beginPath();
+          // ctx.arc(
+          //   intersection.intersectionX,
+          //   intersection.intersectionY,
+          //   5,
+          //   0,
+          //   2 * Math.PI
+          // );
+          // ctx.fill();
         }
+      }
 
-        // ctx.fillStyle = "blue";
-        // ctx.beginPath();
-        // ctx.arc(
-        //   intersection.intersectionX,
-        //   intersection.intersectionY,
-        //   5,
-        //   0,
-        //   2 * Math.PI
-        // );
-        // ctx.fill();
+      this.nearestIntersection = nearestIntersection;
+
+      if (this.keys.has("leftClick")) {
+        const bullet = new Bullet(
+          { x: this.startPos.x, y: this.startPos.y },
+          { width: 10, height: 10 }
+        );
+        bullet.addComponents(
+          new Vector(norm.x * 1000, norm.y * 1000),
+          new Hitbox("point")
+        );
+
+        level.entities.push(bullet);
+
+        this.keys.delete("leftClick");
       }
     }
-
-    this.nearestIntersection = nearestIntersection;
-
-    if (this.keys.has("leftClick")) {
-      const bullet = new Bullet({ x: this.startPos.x, y: this.startPos.y });
-      bullet.addComponents(new Vector(norm.x * 1000, norm.y * 1000));
-      this.bulletSystem.addBullets(bullet);
-
-      this.keys.delete("leftClick");
-    }
-
-    const cellEntities = entities.flatMap((cell) => cell.entities);
-
-    this.bulletSystem.update(cellEntities, dt, game);
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -230,8 +226,6 @@ export class ShootSystem extends System {
         ctx.fill();
       }
     }
-
-    this.bulletSystem.draw(ctx);
   }
 
   lineRect(
