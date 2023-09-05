@@ -30,8 +30,14 @@ export class ShootSystem extends System {
 
     (
       document.querySelector("#gameScreen") as HTMLCanvasElement
-    ).addEventListener("click", (e) => {
+    ).addEventListener("mousedown", (e) => {
       this.keys.add("leftClick");
+    });
+
+    (
+      document.querySelector("#gameScreen") as HTMLCanvasElement
+    ).addEventListener("mouseup", (e) => {
+      this.keys.delete("leftClick");
     });
 
     (
@@ -106,12 +112,12 @@ export class ShootSystem extends System {
         intersectionY: y1,
       };
 
-      console.log(entities)
+      console.log(entities);
       const obstacles = entities.filter((entity) =>
         entity.hasComponent(RectHitbox)
       );
 
-      console.log(obstacles)
+      console.log(obstacles);
 
       for (const obstacle of obstacles) {
         const sx = obstacle.position.x; // square position
@@ -169,7 +175,10 @@ export class ShootSystem extends System {
       this.nearestIntersection = nearestIntersection;
 
       if (this.keys.has("leftClick")) {
-        const bullet = new Bullet({ x: this.startPos.x, y: this.startPos.y }, 5);
+        const bullet = new Bullet(
+          { x: this.startPos.x, y: this.startPos.y },
+          5
+        );
         bullet.addComponents(
           new Vector(norm.x * 1000, norm.y * 1000),
           new CircleHitbox()
@@ -177,7 +186,7 @@ export class ShootSystem extends System {
 
         level.entities.push(bullet);
 
-        this.keys.delete("leftClick");
+        // this.keys.delete("leftClick");
       }
     }
   }
@@ -188,7 +197,6 @@ export class ShootSystem extends System {
       ctx.beginPath();
       ctx.arc(this.startPos.x, this.startPos.y, 5, 0, 2 * Math.PI);
       ctx.fill();
-
 
       if (this.nearestIntersection) {
         if (this.nearestIntersection.intersectedRect) {
