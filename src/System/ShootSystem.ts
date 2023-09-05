@@ -30,15 +30,15 @@ export class ShootSystem extends System {
 
     (
       document.querySelector("#gameScreen") as HTMLCanvasElement
-    ).addEventListener("mousedown", (e) => {
+    ).addEventListener("click", (e) => {
       this.keys.add("leftClick");
     });
 
-    (
-      document.querySelector("#gameScreen") as HTMLCanvasElement
-    ).addEventListener("mouseup", (e) => {
-      this.keys.delete("leftClick");
-    });
+    // (
+    //   document.querySelector("#gameScreen") as HTMLCanvasElement
+    // ).addEventListener("mouseup", (e) => {
+    //   this.keys.delete("leftClick");
+    // });
 
     (
       document.querySelector("#gameScreen") as HTMLCanvasElement
@@ -186,7 +186,7 @@ export class ShootSystem extends System {
 
         level.entities.push(bullet);
 
-        // this.keys.delete("leftClick");
+        this.keys.delete("leftClick");
       }
     }
   }

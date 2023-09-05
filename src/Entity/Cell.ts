@@ -13,14 +13,14 @@ export default class Cell extends Entity {
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
-    ctx.strokeStyle = "#000";
-    ctx.strokeRect(
+    ctx.fillStyle = "#FFF";
+    ctx.fillRect(
       this.position.x,
       this.position.y,
       this.size.width,
       this.size.height
     );
-    ctx.stroke();
+    ctx.fill();
     ctx.closePath();
   }
 }
