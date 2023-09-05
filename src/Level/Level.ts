@@ -8,14 +8,14 @@ import Cell from "../Entity/Cell";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import Wall from "../Entity/Wall";
-import { Hitbox } from "../Component/Hitbox";
 import RectHitbox from "../Component/RectHitbox";
+import CircleHitbox from "../Component/CircleHitbox";
 
 export class Level {
   systems: System[] = [
     new ShootSystem(),
-    new MoveSystem(),
     new PlayerSystem(),
+    new MoveSystem(),
     new CollisionSystem(),
   ];
   entities: Entity[] = [];
@@ -84,15 +84,15 @@ export class Level {
             break;
           }
           case 3: {
-            entities.push(
-              new Player1(
-                {
-                  x: cellSize * index.x + this.offsetX,
-                  y: cellSize * index.y + this.offsetY,
-                },
-                { width: cellSize, height: cellSize }
-              )
+            const player = new Player1(
+              {
+                x: cellSize * index.x + this.offsetX,
+                y: cellSize * index.y + this.offsetY,
+              },
+              { width: cellSize, height: cellSize }
             );
+            player.addComponents(new CircleHitbox());
+            entities.push(player);
             break;
           }
           default:

@@ -60,16 +60,27 @@ export class ShootSystem extends System {
     // if (!players) return;
 
     for (const player of players) {
+      const playerCenter = {
+        x: player.position.x, // + player.size.width / 2,
+        y: player.position.y, // + player.size.height / 2,
+      };
+
+      if (!this.mousePos) return null;
+
       this.startPos = {
-        x: player.position.x + player.size.width / 2,
-        y: player.position.y + player.size.height / 2,
+        x:
+          playerCenter.x +
+          (player.size.width / 2) * Math.cos(this.getDegrees(player)),
+        y:
+          playerCenter.y +
+          (player.size.height / 2) * Math.sin(this.getDegrees(player)),
       };
 
       if (!this.mousePos) return;
 
       const vector = {
-        x: this.mousePos.x - (player.position.x + player.size.width / 2),
-        y: this.mousePos.y - (player.position.y + player.size.height / 2),
+        x: this.mousePos.x - player.position.x,
+        y: this.mousePos.y - player.position.y,
       };
       const mousePosBasedMagnitude = Math.sqrt(
         Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
@@ -112,12 +123,9 @@ export class ShootSystem extends System {
         intersectionY: y1,
       };
 
-      console.log(entities);
       const obstacles = entities.filter((entity) =>
         entity.hasComponent(RectHitbox)
       );
-
-      console.log(obstacles);
 
       for (const obstacle of obstacles) {
         const sx = obstacle.position.x; // square position
@@ -294,5 +302,47 @@ export class ShootSystem extends System {
       return { intersectionX, intersectionY };
     }
     return null;
+  }
+
+  getDegrees(entity: Entity) {
+    if (!this.mousePos) throw new Error("No mousePos");
+
+    if (this.mousePos.y > entity.position.y) {
+      if (this.mousePos.x > entity.position.x) {
+        const angle = Math.atan(
+          Math.abs(this.mousePos.y - entity.position.y) /
+            Math.abs(this.mousePos.x - entity.position.x)
+        );
+
+        return angle;
+      } else {
+        const angle =
+          Math.atan(
+            Math.abs(this.mousePos.x - entity.position.x) /
+              Math.abs(this.mousePos.y - entity.position.y)
+          ) +
+          Math.PI / 2;
+
+        return angle;
+      }
+    } else {
+      if (this.mousePos.x > entity.position.x) {
+        const angle = -Math.atan(
+          Math.abs(this.mousePos.y - entity.position.y) /
+            Math.abs(this.mousePos.x - entity.position.x)
+        );
+
+        return angle;
+      } else {
+        const angle =
+          -Math.atan(
+            Math.abs(this.mousePos.x - entity.position.x) /
+              Math.abs(this.mousePos.y - entity.position.y)
+          ) -
+          Math.PI / 2;
+
+        return angle;
+      }
+    }
   }
 }

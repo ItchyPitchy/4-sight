@@ -23,20 +23,19 @@ export class CollisionSystem extends System {
         if (
           (entity1.hasComponent(CircleHitbox) &&
             entity2.hasComponent(RectHitbox)) ||
-          (entity1.hasComponent(RectHitbox) && entity2.hasComponent(CircleHitbox))
+          (entity1.hasComponent(RectHitbox) &&
+            entity2.hasComponent(CircleHitbox))
         ) {
-          const entityWithCircleHitbox =
-            entity1.hasComponent(CircleHitbox)
-              ? entity1
-              : entity2.hasComponent(CircleHitbox)
-              ? entity2
-              : null;
-          const entityWithRectHitbox =
-            entity1.hasComponent(RectHitbox)
-              ? entity1
-              : entity2.hasComponent(RectHitbox)
-              ? entity2
-              : null;
+          const entityWithCircleHitbox = entity1.hasComponent(CircleHitbox)
+            ? entity1
+            : entity2.hasComponent(CircleHitbox)
+            ? entity2
+            : null;
+          const entityWithRectHitbox = entity1.hasComponent(RectHitbox)
+            ? entity1
+            : entity2.hasComponent(RectHitbox)
+            ? entity2
+            : null;
 
           if (!entityWithCircleHitbox || !entityWithRectHitbox) {
             throw new Error(
@@ -44,11 +43,17 @@ export class CollisionSystem extends System {
             );
           }
 
-          const collision = this.circleRectangleCollision(entityWithCircleHitbox, entityWithRectHitbox);
+          const collision = this.circleRectangleCollision(
+            entityWithCircleHitbox,
+            entityWithRectHitbox
+          );
 
           if (collision) {
-            console.log(collision)
-            this.resolveCircleRectCollision(entityWithCircleHitbox, entityWithRectHitbox);
+            console.log(collision);
+            this.resolveCircleRectCollision(
+              entityWithCircleHitbox,
+              entityWithRectHitbox
+            );
           }
         }
       }
@@ -106,13 +111,16 @@ export class CollisionSystem extends System {
   //   }
   // }
 
-  circleRectangleCollision(entityWithCircleHitbox: Entity, entityWithRectHitbox: Entity) {
-    const cx = entityWithCircleHitbox.position.x
-    const cy = entityWithCircleHitbox.position.y
-    const rx = entityWithRectHitbox.position.x
-    const ry = entityWithRectHitbox.position.y
-    const rw = entityWithRectHitbox.size.width
-    const rh = entityWithRectHitbox.size.height
+  circleRectangleCollision(
+    entityWithCircleHitbox: Entity,
+    entityWithRectHitbox: Entity
+  ) {
+    const cx = entityWithCircleHitbox.position.x;
+    const cy = entityWithCircleHitbox.position.y;
+    const rx = entityWithRectHitbox.position.x;
+    const ry = entityWithRectHitbox.position.y;
+    const rw = entityWithRectHitbox.size.width;
+    const rh = entityWithRectHitbox.size.height;
 
     let closestEdgeX = cx;
     let closestEdgeY = cy;
@@ -125,7 +133,7 @@ export class CollisionSystem extends System {
 
     const distX = cx - closestEdgeX;
     const distY = cy - closestEdgeY;
-    const distance = Math.sqrt((distX * distX) + (distY * distY))
+    const distance = Math.sqrt(distX * distX + distY * distY);
 
     if (distance <= entityWithCircleHitbox.size.width / 2) {
       return true;
@@ -134,13 +142,16 @@ export class CollisionSystem extends System {
     return false;
   }
 
-  resolveCircleRectCollision(entityWithCircleHitbox: Entity, entityWithRectHitbox: Entity) {
-    const cx = entityWithCircleHitbox.position.x
-    const cy = entityWithCircleHitbox.position.y
-    const rx = entityWithRectHitbox.position.x
-    const ry = entityWithRectHitbox.position.y
-    const rw = entityWithRectHitbox.size.width
-    const rh = entityWithRectHitbox.size.height
+  resolveCircleRectCollision(
+    entityWithCircleHitbox: Entity,
+    entityWithRectHitbox: Entity
+  ) {
+    const cx = entityWithCircleHitbox.position.x;
+    const cy = entityWithCircleHitbox.position.y;
+    const rx = entityWithRectHitbox.position.x;
+    const ry = entityWithRectHitbox.position.y;
+    const rw = entityWithRectHitbox.size.width;
+    const rh = entityWithRectHitbox.size.height;
 
     // Expects that point entity has vector but not rectangle entity
     const leftOffset = cx - rx;
@@ -148,21 +159,69 @@ export class CollisionSystem extends System {
     const topOffset = cy - ry;
     const bottomOffset = ry + rh - cy;
 
-    const circleEntityVector = entityWithCircleHitbox.getComponent(Vector) as Vector;
+    const circleEntityVector = entityWithCircleHitbox.getComponent(Vector) as
+      | Vector
+      | undefined;
 
     if (circleEntityVector) {
-      if (leftOffset < topOffset && leftOffset < bottomOffset && circleEntityVector.x > 0) {
-        entityWithCircleHitbox.position.x = entityWithRectHitbox.position.x - entityWithCircleHitbox.size.width / 2
-        circleEntityVector.x = -circleEntityVector.x
-      } else if (rightOffset < topOffset && rightOffset < bottomOffset && circleEntityVector.x < 0) {
-        entityWithCircleHitbox.position.x = entityWithRectHitbox.position.x + entityWithRectHitbox.size.width + entityWithCircleHitbox.size.width
-        circleEntityVector.x = -circleEntityVector.x
-      } else if (topOffset < leftOffset && topOffset < rightOffset && circleEntityVector.y > 0) {
-        entityWithCircleHitbox.position.y = entityWithRectHitbox.position.y - entityWithCircleHitbox.size.height / 2
-        circleEntityVector.y = -circleEntityVector.y
-      } else if (bottomOffset < leftOffset && bottomOffset < rightOffset && circleEntityVector.y < 0) {
-        entityWithCircleHitbox.position.y = entityWithRectHitbox.position.y + entityWithRectHitbox.size.height + entityWithCircleHitbox.size.height / 2
-        circleEntityVector.y = -circleEntityVector.y
+      if (
+        leftOffset < topOffset &&
+        leftOffset < bottomOffset &&
+        circleEntityVector.x > 0
+      ) {
+        entityWithCircleHitbox.position.x =
+          entityWithRectHitbox.position.x -
+          entityWithCircleHitbox.size.width / 2;
+        circleEntityVector.x = -circleEntityVector.x;
+      } else if (
+        rightOffset < topOffset &&
+        rightOffset < bottomOffset &&
+        circleEntityVector.x < 0
+      ) {
+        entityWithCircleHitbox.position.x =
+          entityWithRectHitbox.position.x +
+          entityWithRectHitbox.size.width +
+          entityWithCircleHitbox.size.width / 2;
+        circleEntityVector.x = -circleEntityVector.x;
+      } else if (
+        topOffset < leftOffset &&
+        topOffset < rightOffset &&
+        circleEntityVector.y > 0
+      ) {
+        entityWithCircleHitbox.position.y =
+          entityWithRectHitbox.position.y -
+          entityWithCircleHitbox.size.height / 2;
+        circleEntityVector.y = -circleEntityVector.y;
+      } else if (
+        bottomOffset < leftOffset &&
+        bottomOffset < rightOffset &&
+        circleEntityVector.y < 0
+      ) {
+        entityWithCircleHitbox.position.y =
+          entityWithRectHitbox.position.y +
+          entityWithRectHitbox.size.height +
+          entityWithCircleHitbox.size.height / 2;
+        circleEntityVector.y = -circleEntityVector.y;
+      }
+    } else {
+      if (leftOffset < topOffset && leftOffset < bottomOffset) {
+        entityWithCircleHitbox.position.x =
+          entityWithRectHitbox.position.x -
+          entityWithCircleHitbox.size.width / 2;
+      } else if (rightOffset < topOffset && rightOffset < bottomOffset) {
+        entityWithCircleHitbox.position.x =
+          entityWithRectHitbox.position.x +
+          entityWithRectHitbox.size.width +
+          entityWithCircleHitbox.size.width / 2;
+      } else if (topOffset < leftOffset && topOffset < rightOffset) {
+        entityWithCircleHitbox.position.y =
+          entityWithRectHitbox.position.y -
+          entityWithCircleHitbox.size.height / 2;
+      } else if (bottomOffset < leftOffset && bottomOffset < rightOffset) {
+        entityWithCircleHitbox.position.y =
+          entityWithRectHitbox.position.y +
+          entityWithRectHitbox.size.height +
+          entityWithCircleHitbox.size.height / 2;
       }
     }
   }

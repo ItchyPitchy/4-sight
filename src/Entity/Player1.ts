@@ -9,15 +9,15 @@ export class Player1 extends Entity {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    ctx.beginPath();
     ctx.fillStyle = "#543";
-    ctx.fillRect(
+    ctx.beginPath();
+    ctx.arc(
       this.position.x,
       this.position.y,
-      this.size.width,
-      this.size.height
+      this.size.width / 2,
+      0,
+      2 * Math.PI
     );
     ctx.fill();
-    ctx.closePath();
   }
 }
