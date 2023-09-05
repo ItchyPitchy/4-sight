@@ -9,13 +9,14 @@ import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import Wall from "../Entity/Wall";
 import { Hitbox } from "../Component/Hitbox";
+import RectHitbox from "../Component/RectHitbox";
 
 export class Level {
   systems: System[] = [
     new ShootSystem(),
-    new CollisionSystem(),
-    new PlayerSystem(),
     new MoveSystem(),
+    new PlayerSystem(),
+    new CollisionSystem(),
   ];
   entities: Entity[] = [];
   offsetX = 0;
@@ -54,7 +55,7 @@ export class Level {
 
     this.structure.forEach((row, rowIndex) => {
       row.forEach((rowColumn, rowColumnIndex) => {
-        const position = {
+        const index = {
           x: rowColumnIndex,
           y: rowIndex,
         };
@@ -62,25 +63,23 @@ export class Level {
         entities.push(
           new Cell(
             {
-              x: cellSize * position.x + this.offsetX,
-              y: cellSize * position.y + this.offsetY,
+              x: cellSize * index.x + this.offsetX,
+              y: cellSize * index.y + this.offsetY,
             },
             { width: cellSize, height: cellSize }
           )
         );
 
-        // if (cellEntities !== null) {
-        //   for (const cellEntity of cellEntities) {
         switch (rowColumn) {
-          case 2: {
+          case 1: {
             const wall = new Wall(
               {
-                x: cellSize * position.x + this.offsetX,
-                y: cellSize * position.y + this.offsetY,
+                x: cellSize * index.x + this.offsetX,
+                y: cellSize * index.y + this.offsetY,
               },
               { width: cellSize, height: cellSize }
             );
-            wall.addComponents(new Hitbox("rectangle"));
+            wall.addComponents(new RectHitbox());
             entities.push(wall);
             break;
           }
@@ -88,8 +87,8 @@ export class Level {
             entities.push(
               new Player1(
                 {
-                  x: cellSize * position.x + this.offsetX,
-                  y: cellSize * position.y + this.offsetY,
+                  x: cellSize * index.x + this.offsetX,
+                  y: cellSize * index.y + this.offsetY,
                 },
                 { width: cellSize, height: cellSize }
               )
@@ -99,8 +98,6 @@ export class Level {
           default:
             break;
         }
-        //   }
-        // }
       });
     });
 

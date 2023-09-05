@@ -16,8 +16,6 @@ export default class MoveSystem extends System {
     for (const entity of entities) {
       const vector = entity.getComponent(Vector) as Vector;
 
-      console.log(vector.x);
-
       entity.position.x += vector.x * dt;
       entity.position.y += vector.y * dt;
     }

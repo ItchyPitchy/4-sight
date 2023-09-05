@@ -6,6 +6,8 @@ import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import { Hitbox } from "../Component/Hitbox";
 import { Vector } from "../Component/Vector";
+import CircleHitbox from "../Component/CircleHitbox";
+import RectHitbox from "../Component/RectHitbox";
 
 export class ShootSystem extends System {
   keys = new Set<"leftClick">();
@@ -43,27 +45,25 @@ export class ShootSystem extends System {
   }
 
   appliesTo(entity: Entity) {
-    return entity instanceof Player1;
+    return entity instanceof Entity;
   }
 
-  update(entities: Player1[], dt: number, level: Level, game: Game) {
-    // const playerCell = entities.find((cell) =>
-    //   cell.entities.find((entity) => entity instanceof Player1)
-    // );
+  update(entities: Entity[], dt: number, level: Level, game: Game) {
+    const players = entities.filter((entity) => entity instanceof Player1);
 
-    // if (!playerCell) return;
+    // if (!players) return;
 
-    for (const entity of entities) {
+    for (const player of players) {
       this.startPos = {
-        x: entity.position.x + entity.size.width / 2,
-        y: entity.position.y + entity.size.height / 2,
+        x: player.position.x + player.size.width / 2,
+        y: player.position.y + player.size.height / 2,
       };
 
       if (!this.mousePos) return;
 
       const vector = {
-        x: this.mousePos.x - (entity.position.x + entity.size.width / 2),
-        y: this.mousePos.y - (entity.position.y + entity.size.height / 2),
+        x: this.mousePos.x - (player.position.x + player.size.width / 2),
+        y: this.mousePos.y - (player.position.y + player.size.height / 2),
       };
       const mousePosBasedMagnitude = Math.sqrt(
         Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
@@ -106,15 +106,18 @@ export class ShootSystem extends System {
         intersectionY: y1,
       };
 
-      const obstacleCells = entities.filter((entity) =>
-        entity.hasComponent(Hitbox)
+      console.log(entities)
+      const obstacles = entities.filter((entity) =>
+        entity.hasComponent(RectHitbox)
       );
 
-      for (const cell of obstacleCells) {
-        const sx = cell.position.x; // square position
-        const sy = cell.position.y;
-        const sw = cell.size.width; // and size
-        const sh = cell.size.height;
+      console.log(obstacles)
+
+      for (const obstacle of obstacles) {
+        const sx = obstacle.position.x; // square position
+        const sy = obstacle.position.y;
+        const sw = obstacle.size.width; // and size
+        const sh = obstacle.size.height;
 
         // check if line has hit the square
         // if so, change the fill color
@@ -166,13 +169,10 @@ export class ShootSystem extends System {
       this.nearestIntersection = nearestIntersection;
 
       if (this.keys.has("leftClick")) {
-        const bullet = new Bullet(
-          { x: this.startPos.x, y: this.startPos.y },
-          { width: 10, height: 10 }
-        );
+        const bullet = new Bullet({ x: this.startPos.x, y: this.startPos.y }, 5);
         bullet.addComponents(
           new Vector(norm.x * 1000, norm.y * 1000),
-          new Hitbox("point")
+          new CircleHitbox()
         );
 
         level.entities.push(bullet);
@@ -188,6 +188,7 @@ export class ShootSystem extends System {
       ctx.beginPath();
       ctx.arc(this.startPos.x, this.startPos.y, 5, 0, 2 * Math.PI);
       ctx.fill();
+
 
       if (this.nearestIntersection) {
         if (this.nearestIntersection.intersectedRect) {

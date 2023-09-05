@@ -5,7 +5,7 @@ export default class Entity {
 
   constructor(
     public position: { x: number; y: number },
-    readonly size: { width: number; height: number }
+    public size: { width: number, height: number }
   ) {}
 
   distanceTo(entity: Entity) {
