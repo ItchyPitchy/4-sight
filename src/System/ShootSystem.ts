@@ -200,6 +200,8 @@ export class ShootSystem extends System {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+
     if (this.startPos && this.aimPos) {
       ctx.fillStyle = "orange";
       ctx.beginPath();
@@ -218,7 +220,6 @@ export class ShootSystem extends System {
           );
         }
 
-        ctx.save();
         // draw the line
         ctx.beginPath();
         ctx.setLineDash([5, 15]);
@@ -228,7 +229,6 @@ export class ShootSystem extends System {
           this.nearestIntersection.intersectionY
         );
         ctx.stroke();
-        ctx.restore();
 
         // draw intersection dot
         ctx.fillStyle = "red";
@@ -243,6 +243,7 @@ export class ShootSystem extends System {
         ctx.fill();
       }
     }
+    ctx.restore();
   }
 
   lineRect(

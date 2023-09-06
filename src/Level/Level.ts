@@ -10,6 +10,9 @@ import { Player1 } from "../Entity/Player1";
 import Wall from "../Entity/Wall";
 import RectHitbox from "../Component/RectHitbox";
 import CircleHitbox from "../Component/CircleHitbox";
+import Component from "../Component/Component";
+import Flashlight from "../Component/Flashlight";
+import FlashlightSystem from "../System/FlashlightSystem";
 
 export class Level {
   systems: System[] = [
@@ -17,6 +20,7 @@ export class Level {
     new PlayerSystem(),
     new MoveSystem(),
     new CollisionSystem(),
+    new FlashlightSystem(),
   ];
   entities: Entity[] = [];
   offsetX = 0;
@@ -91,7 +95,7 @@ export class Level {
               },
               { width: cellSize, height: cellSize }
             );
-            player.addComponents(new CircleHitbox());
+            player.addComponents(new CircleHitbox(), new Flashlight(100));
             entities.push(player);
             break;
           }

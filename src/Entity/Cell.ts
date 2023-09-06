@@ -12,15 +12,15 @@ export default class Cell extends Entity {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    ctx.beginPath();
-    ctx.fillStyle = "#FFF";
-    ctx.fillRect(
-      this.position.x,
-      this.position.y,
-      this.size.width,
-      this.size.height
-    );
-    ctx.fill();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.fillStyle = "#FFF";
+    // ctx.fillRect(
+    //   this.position.x,
+    //   this.position.y,
+    //   this.size.width,
+    //   this.size.height
+    // );
+    // ctx.fill();
+    // ctx.closePath();
   }
 }

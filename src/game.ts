@@ -17,11 +17,11 @@ export default class Game {
     this.level.buildLevel(this.gameWidth, this.gameHeight);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    this.level.draw(ctx);
-  }
-
   update(dt: number) {
     this.level.update(dt, this);
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    this.level.draw(ctx);
   }
 }

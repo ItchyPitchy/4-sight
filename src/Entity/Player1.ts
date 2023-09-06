@@ -9,6 +9,8 @@ export class Player1 extends Entity {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
+    ctx.save();
+
     ctx.fillStyle = "#543";
     ctx.beginPath();
     ctx.arc(
@@ -19,5 +21,7 @@ export class Player1 extends Entity {
       2 * Math.PI
     );
     ctx.fill();
+
+    ctx.restore();
   }
 }
