@@ -1,1 +1,0 @@
-body{flex-direction:column;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:0;display:flex}h1{color:#000;letter-spacing:.2em;font-family:"monospace";font-size:40px;font-weight:700}canvas{position:absolute}#sightCanvas{z-index:999;pointer-events:none}#shadowCanvas{z-index:555;pointer-events:none}
