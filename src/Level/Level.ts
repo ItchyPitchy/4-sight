@@ -15,12 +15,12 @@ import LightSource from "../Component/LightSource";
 
 export class Level {
   systems: System[] = [
-    new ShootSystem(),
     new PlayerSystem(),
     new MoveSystem(),
     new CollisionSystem(),
   ];
   shadowSystem = new LightsourceSystem();
+  ShootSystem = new ShootSystem();
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
@@ -108,13 +108,21 @@ export class Level {
   }
 
   update(dt: number, game: Game) {
-    for (const system of [...this.systems, this.shadowSystem]) {
+    for (const system of [
+      ...this.systems,
+      this.shadowSystem,
+      this.ShootSystem,
+    ]) {
       const filteredCells = this.entities.filter(system.appliesTo);
       system.update(filteredCells, dt, this, game);
     }
   }
 
-  draw(mainCtx: CanvasRenderingContext2D, shadowCtx: CanvasRenderingContext2D) {
+  draw(
+    mainCtx: CanvasRenderingContext2D,
+    shadowCtx: CanvasRenderingContext2D,
+    sightCtx: CanvasRenderingContext2D
+  ) {
     for (const entity of this.entities) {
       entity.draw(mainCtx);
     }
@@ -124,5 +132,6 @@ export class Level {
     }
 
     this.shadowSystem.draw(shadowCtx);
+    this.ShootSystem.draw(sightCtx);
   }
 }

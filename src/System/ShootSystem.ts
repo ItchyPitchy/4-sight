@@ -4,14 +4,13 @@ import { System } from "./System";
 import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
-import { Hitbox } from "../Component/Hitbox";
 import { Vector } from "../Component/Vector";
 import CircleHitbox from "../Component/CircleHitbox";
 import RectHitbox from "../Component/RectHitbox";
 
 export class ShootSystem extends System {
-  keys = new Set<"leftClick">();
-  mousePos: { x: number; y: number } | null = null;
+  gameWidth: number = 0;
+  gameHeight: number = 0;
   startPos: { x: number; y: number } | null = null;
   aimPos: { x: number; y: number } | null = null;
   nearestIntersection: {
@@ -27,27 +26,6 @@ export class ShootSystem extends System {
 
   constructor() {
     super();
-
-    (
-      document.querySelector("#gameScreen") as HTMLCanvasElement
-    ).addEventListener("click", (e) => {
-      this.keys.add("leftClick");
-    });
-
-    // (
-    //   document.querySelector("#gameScreen") as HTMLCanvasElement
-    // ).addEventListener("mouseup", (e) => {
-    //   this.keys.delete("leftClick");
-    // });
-
-    (
-      document.querySelector("#gameScreen") as HTMLCanvasElement
-    ).addEventListener("mousemove", (e) => {
-      this.mousePos = {
-        x: e.offsetX,
-        y: e.offsetY,
-      };
-    });
   }
 
   appliesTo(entity: Entity) {
@@ -55,6 +33,9 @@ export class ShootSystem extends System {
   }
 
   update(entities: Entity[], dt: number, level: Level, game: Game) {
+    if (game.gameWidth) this.gameWidth = game.gameWidth;
+    if (game.gameHeight) this.gameHeight = game.gameHeight;
+
     const players = entities.filter((entity) => entity instanceof Player1);
 
     // if (!players) return;
@@ -65,22 +46,24 @@ export class ShootSystem extends System {
         y: player.position.y, // + player.size.height / 2,
       };
 
-      if (!this.mousePos) return null;
+      if (!game.mousePos) return null;
 
       this.startPos = {
         x:
           playerCenter.x +
-          (player.size.width / 2) * Math.cos(this.getDegrees(player)),
+          (player.size.width / 2) *
+            Math.cos(this.getDegrees(player.position, game.mousePos)),
         y:
           playerCenter.y +
-          (player.size.height / 2) * Math.sin(this.getDegrees(player)),
+          (player.size.height / 2) *
+            Math.sin(this.getDegrees(player.position, game.mousePos)),
       };
 
-      if (!this.mousePos) return;
+      if (!game.mousePos) return;
 
       const vector = {
-        x: this.mousePos.x - player.position.x,
-        y: this.mousePos.y - player.position.y,
+        x: game.mousePos.x - player.position.x,
+        y: game.mousePos.y - player.position.y,
       };
       const mousePosBasedMagnitude = Math.sqrt(
         Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
@@ -182,7 +165,7 @@ export class ShootSystem extends System {
 
       this.nearestIntersection = nearestIntersection;
 
-      if (this.keys.has("leftClick")) {
+      if (game.keys.has("leftClick")) {
         const bullet = new Bullet(
           { x: this.startPos.x, y: this.startPos.y },
           5
@@ -194,15 +177,82 @@ export class ShootSystem extends System {
 
         level.entities.push(bullet);
 
-        this.keys.delete("leftClick");
+        game.keys.delete("leftClick");
       }
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-
     if (this.startPos && this.aimPos) {
+      // ctx.save();
+
+      // ctx.restore();
+
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
+
+      // ctx.save();
+
+      // ctx.translate(this.startPos.x, this.startPos.y);
+
+      // ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
+      // // Create a circular clipping path
+      // ctx.beginPath();
+      // ctx.arc(0, 0, 250, 0, Math.PI * 2);
+      // ctx.clip();
+
+      // // draw background
+      // const lingrad = ctx.createLinearGradient(0, -300, 0, 0);
+      // lingrad.addColorStop(0, "rgba(0,0,0,1)");
+      // lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
+      // lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
+      // lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
+      // lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
+      // lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
+      // lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
+      // lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+      // lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
+      // lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
+      // lingrad.addColorStop(1, "rgba(0,0,0,0)");
+
+      // ctx.globalCompositeOperation = "source-in";
+      // ctx.fillStyle = lingrad;
+
+      // ctx.fill();
+
+      // ctx.restore();
+
+      ctx.save();
+
+      ctx.translate(this.startPos.x, this.startPos.y);
+      ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-1600, -800);
+      ctx.lineTo(1600, -800);
+      ctx.clip();
+
+      // draw background
+      const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
+      lingrad.addColorStop(0, "rgba(0,0,0,1)");
+      lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
+      lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
+      lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
+      lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
+      lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
+      lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
+      lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+      lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
+      lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
+      lingrad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.globalCompositeOperation = "source-in";
+      ctx.fillStyle = lingrad;
+      ctx.fill();
+
+      ctx.restore();
+
+      ctx.save();
+
       ctx.fillStyle = "orange";
       ctx.beginPath();
       ctx.arc(this.startPos.x, this.startPos.y, 5, 0, 2 * Math.PI);
@@ -242,8 +292,9 @@ export class ShootSystem extends System {
         );
         ctx.fill();
       }
+
+      ctx.restore();
     }
-    ctx.restore();
   }
 
   lineRect(
@@ -305,40 +356,41 @@ export class ShootSystem extends System {
     return null;
   }
 
-  getDegrees(entity: Entity) {
-    if (!this.mousePos) throw new Error("No mousePos");
+  getDegrees(
+    startPos: { x: number; y: number },
+    mousePos: { x: number; y: number }
+  ) {
+    if (!mousePos) throw new Error("No mousePos");
 
-    if (this.mousePos.y > entity.position.y) {
-      if (this.mousePos.x > entity.position.x) {
+    if (mousePos.y > startPos.y) {
+      if (mousePos.x > startPos.x) {
         const angle = Math.atan(
-          Math.abs(this.mousePos.y - entity.position.y) /
-            Math.abs(this.mousePos.x - entity.position.x)
+          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
         );
 
         return angle;
       } else {
         const angle =
           Math.atan(
-            Math.abs(this.mousePos.x - entity.position.x) /
-              Math.abs(this.mousePos.y - entity.position.y)
+            Math.abs(mousePos.x - startPos.x) /
+              Math.abs(mousePos.y - startPos.y)
           ) +
           Math.PI / 2;
 
         return angle;
       }
     } else {
-      if (this.mousePos.x > entity.position.x) {
+      if (mousePos.x > startPos.x) {
         const angle = -Math.atan(
-          Math.abs(this.mousePos.y - entity.position.y) /
-            Math.abs(this.mousePos.x - entity.position.x)
+          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
         );
 
         return angle;
       } else {
         const angle =
           -Math.atan(
-            Math.abs(this.mousePos.x - entity.position.x) /
-              Math.abs(this.mousePos.y - entity.position.y)
+            Math.abs(mousePos.x - startPos.x) /
+              Math.abs(mousePos.y - startPos.y)
           ) -
           Math.PI / 2;
 

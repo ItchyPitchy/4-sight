@@ -23,7 +23,12 @@ canvas {
 #gameScreen {
 }
 
-#shadowCanvas {
+#sightCanvas {
   z-index: 999;
+  pointer-events: none;
+}
+
+#shadowCanvas {
+  z-index: 555;
   pointer-events: none;
 }
