@@ -4,15 +4,14 @@ import MoveSystem from "../System/MoveSystem";
 import PlayerSystem from "../System/PlayerSystem";
 import { ShootSystem } from "../System/ShootSystem";
 import { System } from "../System/System";
+import LightsourceSystem from "../System/LightsourceSystem";
 import Cell from "../Entity/Cell";
 import Entity from "../Entity/Entity";
 import { Player1 } from "../Entity/Player1";
 import Wall from "../Entity/Wall";
 import RectHitbox from "../Component/RectHitbox";
 import CircleHitbox from "../Component/CircleHitbox";
-import Component from "../Component/Component";
-import Flashlight from "../Component/Flashlight";
-import FlashlightSystem from "../System/FlashlightSystem";
+import LightSource from "../Component/LightSource";
 
 export class Level {
   systems: System[] = [
@@ -20,8 +19,8 @@ export class Level {
     new PlayerSystem(),
     new MoveSystem(),
     new CollisionSystem(),
-    new FlashlightSystem(),
   ];
+  shadowSystem = new LightsourceSystem();
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
@@ -95,7 +94,7 @@ export class Level {
               },
               { width: cellSize, height: cellSize }
             );
-            player.addComponents(new CircleHitbox(), new Flashlight(100));
+            player.addComponents(new CircleHitbox(), new LightSource());
             entities.push(player);
             break;
           }
@@ -109,19 +108,21 @@ export class Level {
   }
 
   update(dt: number, game: Game) {
-    for (const system of this.systems) {
+    for (const system of [...this.systems, this.shadowSystem]) {
       const filteredCells = this.entities.filter(system.appliesTo);
       system.update(filteredCells, dt, this, game);
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(mainCtx: CanvasRenderingContext2D, shadowCtx: CanvasRenderingContext2D) {
     for (const entity of this.entities) {
-      entity.draw(ctx);
+      entity.draw(mainCtx);
     }
 
     for (const system of this.systems) {
-      system.draw(ctx);
+      system.draw(mainCtx);
     }
+
+    this.shadowSystem.draw(shadowCtx);
   }
 }

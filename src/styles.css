@@ -15,3 +15,15 @@ h1 {
   letter-spacing: 0.2em;
   font-weight: bold;
 }
+
+canvas {
+  position: absolute;
+}
+
+#gameScreen {
+}
+
+#shadowCanvas {
+  z-index: 999;
+  pointer-events: none;
+}

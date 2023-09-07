@@ -1,17 +1,24 @@
 import Game from "./game";
 
-const canvas = document.querySelector("#gameScreen") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+const mainCanvas = document.querySelector("#gameScreen") as HTMLCanvasElement;
+const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
+
+const shadowCanvas = document.querySelector(
+  "#shadowCanvas"
+) as HTMLCanvasElement;
+const shadowCtx = shadowCanvas.getContext("2d") as CanvasRenderingContext2D;
 // ctx.imageSmoothingEnabled = true;
 // ctx.imageSmoothingQuality = "high";
 
 const GAME_WIDTH = window.innerWidth;
 const GAME_HEIGHT = window.innerHeight;
 
-canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT;
+mainCanvas.width = GAME_WIDTH;
+mainCanvas.height = GAME_HEIGHT;
+shadowCanvas.width = GAME_WIDTH;
+shadowCanvas.height = GAME_HEIGHT;
 
-const game = new Game(GAME_WIDTH, GAME_HEIGHT, ctx);
+const game = new Game(GAME_WIDTH, GAME_HEIGHT, mainCtx, shadowCtx);
 
 let oldTimeStamp: number = 0;
 
@@ -20,10 +27,11 @@ function gameLoop(timestamp: number) {
   let dt = (timestamp - oldTimeStamp) / 1000;
   oldTimeStamp = timestamp;
 
-  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  mainCtx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  shadowCtx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
   game.update(dt);
-  game.draw(ctx);
+  game.draw(mainCtx, shadowCtx);
 
   requestAnimationFrame(gameLoop);
 }

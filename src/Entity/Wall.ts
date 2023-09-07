@@ -10,7 +10,6 @@ export default class Wall extends CellEntity {
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-
     ctx.beginPath();
     ctx.fillStyle = "#000";
     ctx.fillRect(
@@ -21,7 +20,6 @@ export default class Wall extends CellEntity {
     );
     ctx.fill();
     ctx.closePath();
-
     ctx.restore();
   }
 }

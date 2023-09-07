@@ -8,7 +8,8 @@ export default class Game {
   constructor(
     readonly gameWidth: number,
     readonly gameHeight: number,
-    readonly ctx: CanvasRenderingContext2D
+    readonly mainCtx: CanvasRenderingContext2D,
+    readonly shadowCtx: CanvasRenderingContext2D
   ) {
     this.start();
   }
@@ -21,7 +22,7 @@ export default class Game {
     this.level.update(dt, this);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    this.level.draw(ctx);
+  draw(mainCtx: CanvasRenderingContext2D, shadowCtx: CanvasRenderingContext2D) {
+    this.level.draw(mainCtx, shadowCtx);
   }
 }
