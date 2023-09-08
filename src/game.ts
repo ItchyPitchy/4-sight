@@ -5,14 +5,14 @@ export default class Game {
   level = new Level1();
   entities: Entity[] = [];
   keys = new Set<"leftClick">();
-  mousePos: { x: number; y: number } | null = null;
 
   constructor(
     readonly gameWidth: number,
     readonly gameHeight: number,
     readonly mainCtx: CanvasRenderingContext2D,
     readonly shadowCtx: CanvasRenderingContext2D,
-    readonly sightCtx: CanvasRenderingContext2D
+    readonly sightCtx: CanvasRenderingContext2D,
+    public mousePos = { x: gameWidth / 2, y: gameHeight / 2 }
   ) {
     (
       document.querySelector("#gameScreen") as HTMLCanvasElement

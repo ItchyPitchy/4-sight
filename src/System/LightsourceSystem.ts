@@ -35,6 +35,8 @@ export default class LightsourceSystem extends System {
       return;
     }
 
+    if (!game.mousePos) return;
+
     // Setup scene
     this.room = new Rectangle(0, 0, game.gameWidth, game.gameHeight);
 
@@ -50,8 +52,19 @@ export default class LightsourceSystem extends System {
         )
     );
 
+    const lightSourceOrigin = {
+      x:
+        player.position.x +
+        (player.size.width / 2) *
+          Math.cos(this.getDegrees(player.position, game.mousePos)),
+      y:
+        player.position.y +
+        (player.size.height / 2) *
+          Math.sin(this.getDegrees(player.position, game.mousePos)),
+    };
+
     // Test lightsource middle of map
-    this.lightSource = new Point(player.position.x, player.position.y);
+    this.lightSource = new Point(lightSourceOrigin.x, lightSourceOrigin.y);
 
     const endpoints = loadMap(
       this.room,
@@ -130,5 +143,48 @@ export default class LightsourceSystem extends System {
     ctx.fill();
 
     ctx.restore();
+  }
+
+  getDegrees(
+    startPos: { x: number; y: number },
+    mousePos: { x: number; y: number }
+  ) {
+    if (!mousePos) throw new Error("No mousePos");
+
+    if (mousePos.y > startPos.y) {
+      if (mousePos.x > startPos.x) {
+        const angle = Math.atan(
+          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
+        );
+
+        return angle;
+      } else {
+        const angle =
+          Math.atan(
+            Math.abs(mousePos.x - startPos.x) /
+              Math.abs(mousePos.y - startPos.y)
+          ) +
+          Math.PI / 2;
+
+        return angle;
+      }
+    } else {
+      if (mousePos.x > startPos.x) {
+        const angle = -Math.atan(
+          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
+        );
+
+        return angle;
+      } else {
+        const angle =
+          -Math.atan(
+            Math.abs(mousePos.x - startPos.x) /
+              Math.abs(mousePos.y - startPos.y)
+          ) -
+          Math.PI / 2;
+
+        return angle;
+      }
+    }
   }
 }

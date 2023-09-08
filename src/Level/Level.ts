@@ -14,16 +14,23 @@ import CircleHitbox from "../Component/CircleHitbox";
 import LightSource from "../Component/LightSource";
 
 export class Level {
-  systems: System[] = [
-    new PlayerSystem(),
-    new MoveSystem(),
-    new CollisionSystem(),
-  ];
-  shadowSystem = new LightsourceSystem();
-  ShootSystem = new ShootSystem();
+  playerSystem = new PlayerSystem();
+  moveSystem = new MoveSystem();
+  collisionSystem = new CollisionSystem();
+  lightsourceSystem = new LightsourceSystem();
+  shootSystem = new ShootSystem();
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
+  playerTurn: "player1" | "player2" | null = "player1";
+  playerTurnTimer = 10;
+  playerTurnCount = 0;
+  player1Turn: {
+    mousePos: { x: number; y: number };
+    position: { x: number; y: number };
+    shoot: boolean;
+  }[] = [];
+  player1TurnCurrentIndex = 0;
 
   constructor(readonly structure: Array<Array<number>>) {}
 
@@ -56,11 +63,11 @@ export class Level {
       throw new Error("Cell size less than 0");
     }
 
-    this.structure.forEach((row, rowIndex) => {
-      row.forEach((rowColumn, rowColumnIndex) => {
+    for (let i = 0; i < this.structure.length; i++) {
+      for (let j = 0; j < this.structure[i].length; j++) {
         const index = {
-          x: rowColumnIndex,
-          y: rowIndex,
+          x: j,
+          y: i,
         };
 
         entities.push(
@@ -73,7 +80,7 @@ export class Level {
           )
         );
 
-        switch (rowColumn) {
+        switch (this.structure[i][j]) {
           case 1: {
             const wall = new Wall(
               {
@@ -101,20 +108,68 @@ export class Level {
           default:
             break;
         }
-      });
-    });
+      }
+    }
 
     this.entities = entities;
   }
 
   update(dt: number, game: Game) {
-    for (const system of [
-      ...this.systems,
-      this.shadowSystem,
-      this.ShootSystem,
-    ]) {
-      const filteredCells = this.entities.filter(system.appliesTo);
-      system.update(filteredCells, dt, this, game);
+    if (this.playerTurn !== null) {
+      if (this.playerTurnTimer <= this.playerTurnCount) {
+        this.playerTurn = null;
+        this.buildLevel(game.gameWidth, game.gameHeight);
+      } else {
+        console.log(this.playerTurnCount);
+
+        const player = this.entities.find(
+          (entity) => entity instanceof Player1
+        );
+
+        if (player) {
+          this.player1Turn.push({
+            mousePos: game.mousePos,
+            position: {
+              x: player.position.x,
+              y: player.position.y,
+            },
+            shoot: false,
+          });
+        }
+
+        this.playerTurnCount += dt;
+
+        for (const system of [
+          this.playerSystem,
+          this.moveSystem,
+          this.collisionSystem,
+          this.lightsourceSystem,
+          this.shootSystem,
+        ]) {
+          const filteredCells = this.entities.filter(system.appliesTo);
+          system.update(filteredCells, dt, this, game);
+        }
+      }
+    } else {
+      const player = this.entities.find((entity) => entity instanceof Player1);
+
+      if (player) {
+        console.log(this.player1Turn);
+        player.position =
+          this.player1Turn[this.player1TurnCurrentIndex].position;
+        game.mousePos = this.player1Turn[this.player1TurnCurrentIndex].mousePos;
+
+        for (const system of [
+          this.moveSystem,
+          this.collisionSystem,
+          this.lightsourceSystem,
+          this.shootSystem,
+        ]) {
+          const filteredCells = this.entities.filter(system.appliesTo);
+          system.update(filteredCells, dt, this, game);
+        }
+        this.player1TurnCurrentIndex++;
+      }
     }
   }
 
@@ -127,11 +182,15 @@ export class Level {
       entity.draw(mainCtx);
     }
 
-    for (const system of this.systems) {
+    for (const system of [
+      this.playerSystem,
+      this.moveSystem,
+      this.collisionSystem,
+    ]) {
       system.draw(mainCtx);
     }
 
-    this.shadowSystem.draw(shadowCtx);
-    this.ShootSystem.draw(sightCtx);
+    this.lightsourceSystem.draw(shadowCtx);
+    this.shootSystem.draw(sightCtx);
   }
 }

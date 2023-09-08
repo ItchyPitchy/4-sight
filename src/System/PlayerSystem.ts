@@ -58,19 +58,19 @@ export default class PlayerSystem extends System {
 
     for (const entity of entities) {
       if (this.keys.has("w")) {
-        entity.position.y -= 10;
+        entity.position.y -= 2;
       }
 
       if (this.keys.has("a")) {
-        entity.position.x -= 10;
+        entity.position.x -= 2;
       }
 
       if (this.keys.has("s")) {
-        entity.position.y += 10;
+        entity.position.y += 2;
       }
 
       if (this.keys.has("d")) {
-        entity.position.x += 10;
+        entity.position.x += 2;
       }
     }
 

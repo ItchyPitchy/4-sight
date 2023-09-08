@@ -33,8 +33,8 @@ export class ShootSystem extends System {
   }
 
   update(entities: Entity[], dt: number, level: Level, game: Game) {
-    if (game.gameWidth) this.gameWidth = game.gameWidth;
-    if (game.gameHeight) this.gameHeight = game.gameHeight;
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameHeight;
 
     const players = entities.filter((entity) => entity instanceof Player1);
 
@@ -165,7 +165,11 @@ export class ShootSystem extends System {
 
       this.nearestIntersection = nearestIntersection;
 
-      if (game.keys.has("leftClick")) {
+      if (
+        game.keys.has("leftClick") ||
+        (level.playerTurn === null &&
+          level.player1Turn[level.player1TurnCurrentIndex].shoot)
+      ) {
         const bullet = new Bullet(
           { x: this.startPos.x, y: this.startPos.y },
           5
@@ -174,6 +178,8 @@ export class ShootSystem extends System {
           new Vector(norm.x * 1000, norm.y * 1000),
           new CircleHitbox()
         );
+
+        level.player1Turn[level.player1Turn.length - 1].shoot = true;
 
         level.entities.push(bullet);
 
@@ -188,8 +194,8 @@ export class ShootSystem extends System {
 
       // ctx.restore();
 
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
+      // ctx.fillStyle = "black";
+      // ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
 
       // ctx.save();
 
@@ -201,7 +207,7 @@ export class ShootSystem extends System {
       // ctx.arc(0, 0, 250, 0, Math.PI * 2);
       // ctx.clip();
 
-      // // draw background
+      // draw background
       // const lingrad = ctx.createLinearGradient(0, -300, 0, 0);
       // lingrad.addColorStop(0, "rgba(0,0,0,1)");
       // lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
@@ -216,40 +222,40 @@ export class ShootSystem extends System {
       // lingrad.addColorStop(1, "rgba(0,0,0,0)");
 
       // ctx.globalCompositeOperation = "source-in";
-      // ctx.fillStyle = lingrad;
+      // ctx.fillStyle = "transparent";
 
       // ctx.fill();
 
       // ctx.restore();
 
-      ctx.save();
+      // ctx.save();
 
-      ctx.translate(this.startPos.x, this.startPos.y);
-      ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-1600, -800);
-      ctx.lineTo(1600, -800);
-      ctx.clip();
+      // ctx.translate(this.startPos.x, this.startPos.y);
+      // ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
+      // ctx.beginPath();
+      // ctx.moveTo(0, 0);
+      // ctx.lineTo(-1600, -800);
+      // ctx.lineTo(1600, -800);
+      // ctx.clip();
 
-      // draw background
-      const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
-      lingrad.addColorStop(0, "rgba(0,0,0,1)");
-      lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
-      lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
-      lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
-      lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
-      lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
-      lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
-      lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
-      lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
-      lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
-      lingrad.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.globalCompositeOperation = "source-in";
-      ctx.fillStyle = lingrad;
-      ctx.fill();
+      // // draw background
+      // const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
+      // lingrad.addColorStop(0, "rgba(0,0,0,1)");
+      // lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
+      // lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
+      // lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
+      // lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
+      // lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
+      // lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
+      // lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+      // lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
+      // lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
+      // lingrad.addColorStop(1, "rgba(0,0,0,0)");
+      // ctx.globalCompositeOperation = "source-in";
+      // ctx.fillStyle = lingrad;
+      // ctx.fill();
 
-      ctx.restore();
+      // ctx.restore();
 
       ctx.save();
 
