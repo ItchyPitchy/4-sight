@@ -1,7 +1,8 @@
 import { Level } from "./Level";
+import background from "../image.png";
 
 export class Level1 extends Level {
-  constructor() {
+  constructor(gameWidth: number, gameHeight: number) {
     const structure = [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -28,6 +29,6 @@ export class Level1 extends Level {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
 
-    super(structure);
+    super(structure, background, gameWidth, gameHeight);
   }
 }

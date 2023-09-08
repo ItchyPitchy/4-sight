@@ -1,6 +1,6 @@
 import Entity from "./Entity";
 
-export class Player1 extends Entity {
+export default class Player extends Entity {
   constructor(
     position: { x: number; y: number },
     size: { width: number; height: number }

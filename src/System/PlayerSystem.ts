@@ -2,7 +2,7 @@ import Game from "../game";
 import { Level } from "../Level/Level";
 import { System } from "./System";
 import Entity from "../Entity/Entity";
-import { Player1 } from "../Entity/Player1";
+import Player from "../Entity/Player";
 
 export default class PlayerSystem extends System {
   keys = new Set<"w" | "a" | "s" | "d">();
@@ -46,10 +46,10 @@ export default class PlayerSystem extends System {
   }
 
   appliesTo(entity: Entity) {
-    return entity instanceof Player1;
+    return entity instanceof Player;
   }
 
-  update(entities: Player1[], dt: number, level: Level, game: Game) {
+  update(entities: Player[], dt: number, level: Level, game: Game) {
     // const playerCell = entities.find((cell) => cell.getEntity(Player1));
 
     // if (!playerCell) return;

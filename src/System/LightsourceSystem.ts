@@ -2,7 +2,7 @@ import Game from "../game";
 import { System } from "./System";
 import { Level } from "../Level/Level";
 import Entity from "../Entity/Entity";
-import { Player1 } from "../Entity/Player1";
+import Player from "../Entity/Player";
 import Wall from "../Entity/Wall";
 import LightSource from "../Component/LightSource";
 import { Rectangle } from "../rectangle";
@@ -27,7 +27,7 @@ export default class LightsourceSystem extends System {
   }
 
   update(entities: Entity[], dt: number, level: Level, game: Game) {
-    const player = entities.find((entity) => entity instanceof Player1);
+    const player = entities.find((entity) => entity instanceof Player);
     const walls = entities.filter((entity) => entity instanceof Wall);
 
     if (!player) {
@@ -84,14 +84,6 @@ export default class LightsourceSystem extends System {
       this.lightSource,
       this.visibility
     );
-
-    for (const block of this.blocks) {
-      this.drawRectangle(ctx, "blue", block);
-    }
-
-    for (const wall of this.walls) {
-      this.drawSegment(ctx, "red", wall);
-    }
   }
 
   drawRectangle(

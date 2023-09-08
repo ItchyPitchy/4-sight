@@ -3,11 +3,11 @@ import { CollisionSystem } from "../System/CollisionSystem";
 import MoveSystem from "../System/MoveSystem";
 import PlayerSystem from "../System/PlayerSystem";
 import { ShootSystem } from "../System/ShootSystem";
-import { System } from "../System/System";
+import { PlayerTurnSystem } from "../System/PlayerTurnSystem";
 import LightsourceSystem from "../System/LightsourceSystem";
 import Cell from "../Entity/Cell";
 import Entity from "../Entity/Entity";
-import { Player1 } from "../Entity/Player1";
+import Player from "../Entity/Player";
 import Wall from "../Entity/Wall";
 import RectHitbox from "../Component/RectHitbox";
 import CircleHitbox from "../Component/CircleHitbox";
@@ -19,6 +19,7 @@ export class Level {
   collisionSystem = new CollisionSystem();
   lightsourceSystem = new LightsourceSystem();
   shootSystem = new ShootSystem();
+  playerTurnSystem = new PlayerTurnSystem();
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
@@ -30,9 +31,24 @@ export class Level {
     position: { x: number; y: number };
     shoot: boolean;
   }[] = [];
+  player2Turn: {
+    mousePos: { x: number; y: number };
+    position: { x: number; y: number };
+    shoot: boolean;
+  }[] = [];
   player1TurnCurrentIndex = 0;
+  texture: HTMLImageElement | null = null;
 
-  constructor(readonly structure: Array<Array<number>>) {}
+  constructor(
+    readonly structure: Array<Array<number>>,
+    background: any,
+    readonly gameWidth: number,
+    readonly gameHeight: number
+  ) {
+    const texture = new Image();
+    texture.src = background;
+    this.texture = texture;
+  }
 
   buildLevel(gameWidth: number, gameHeight: number) {
     const entities: Entity[] = [];
@@ -94,7 +110,7 @@ export class Level {
             break;
           }
           case 3: {
-            const player = new Player1(
+            const player = new Player(
               {
                 x: cellSize * index.x + this.offsetX,
                 y: cellSize * index.y + this.offsetY,
@@ -122,9 +138,7 @@ export class Level {
       } else {
         console.log(this.playerTurnCount);
 
-        const player = this.entities.find(
-          (entity) => entity instanceof Player1
-        );
+        const player = this.entities.find((entity) => entity instanceof Player);
 
         if (player) {
           this.player1Turn.push({
@@ -151,7 +165,7 @@ export class Level {
         }
       }
     } else {
-      const player = this.entities.find((entity) => entity instanceof Player1);
+      const player = this.entities.find((entity) => entity instanceof Player);
 
       if (player) {
         console.log(this.player1Turn);
@@ -178,6 +192,10 @@ export class Level {
     shadowCtx: CanvasRenderingContext2D,
     sightCtx: CanvasRenderingContext2D
   ) {
+    if (this.texture) {
+      mainCtx.drawImage(this.texture, 0, 0, this.gameWidth, this.gameHeight);
+    }
+
     for (const entity of this.entities) {
       entity.draw(mainCtx);
     }

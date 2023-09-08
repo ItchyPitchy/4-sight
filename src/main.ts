@@ -3,6 +3,9 @@ import Game from "./game";
 const mainCanvas = document.querySelector("#gameScreen") as HTMLCanvasElement;
 const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
 
+mainCtx.imageSmoothingEnabled = true;
+mainCtx.imageSmoothingQuality = "high";
+
 const shadowCanvas = document.querySelector(
   "#shadowCanvas"
 ) as HTMLCanvasElement;

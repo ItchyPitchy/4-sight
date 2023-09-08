@@ -1,5 +1,5 @@
 import Entity from "../Entity/Entity";
-import { Player1 } from "../Entity/Player1";
+import Player from "../Entity/Player";
 import { Level } from "../Level/Level";
 import Game from "../game";
 import { System } from "./System";
@@ -10,11 +10,11 @@ export class PlayerTurnSystem extends System {
   }
 
   appliesTo(entity: Entity) {
-    return entity instanceof Player1;
+    return entity instanceof Player;
   }
 
   update(entities: Entity[], dt: number, level: Level, game: Game) {
-    const player1 = entities.find((entity) => entity instanceof Player1);
+    const player1 = entities.find((entity) => entity instanceof Player);
 
     if (!player1) return;
 

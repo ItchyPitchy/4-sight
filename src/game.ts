@@ -2,7 +2,7 @@ import { Level1 } from "./Level/Level1";
 import Entity from "./Entity/Entity";
 
 export default class Game {
-  level = new Level1();
+  level = new Level1(this.gameWidth, this.gameHeight);
   entities: Entity[] = [];
   keys = new Set<"leftClick">();
 
@@ -19,13 +19,6 @@ export default class Game {
     ).addEventListener("click", (e) => {
       this.keys.add("leftClick");
     });
-
-    // (
-    //   document.querySelector("#gameScreen") as HTMLCanvasElement
-    // ).addEventListener("mouseup", (e) => {
-    //   this.keys.delete("leftClick");
-    // });
-
     (
       document.querySelector("#gameScreen") as HTMLCanvasElement
     ).addEventListener("mousemove", (e) => {

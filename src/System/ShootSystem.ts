@@ -3,7 +3,7 @@ import { Level } from "../Level/Level";
 import { System } from "./System";
 import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
-import { Player1 } from "../Entity/Player1";
+import Player from "../Entity/Player";
 import { Vector } from "../Component/Vector";
 import CircleHitbox from "../Component/CircleHitbox";
 import RectHitbox from "../Component/RectHitbox";
@@ -16,12 +16,6 @@ export class ShootSystem extends System {
   nearestIntersection: {
     intersectionX: number;
     intersectionY: number;
-    intersectedRect?: {
-      sx: number;
-      sy: number;
-      sw: number;
-      sh: number;
-    };
   } | null = null;
 
   constructor() {
@@ -36,7 +30,7 @@ export class ShootSystem extends System {
     this.gameWidth = game.gameWidth;
     this.gameHeight = game.gameHeight;
 
-    const players = entities.filter((entity) => entity instanceof Player1);
+    const players = entities.filter((entity) => entity instanceof Player);
 
     // if (!players) return;
 
@@ -95,12 +89,6 @@ export class ShootSystem extends System {
       let nearestIntersection: {
         intersectionX: number;
         intersectionY: number;
-        intersectedRect?: {
-          sx: number;
-          sy: number;
-          sw: number;
-          sh: number;
-        };
       } = {
         intersectionX: x1,
         intersectionY: y1,
@@ -141,25 +129,8 @@ export class ShootSystem extends System {
             nearestIntersection = {
               intersectionX: intersection.intersectionX,
               intersectionY: intersection.intersectionY,
-              intersectedRect: {
-                sx,
-                sy,
-                sw,
-                sh,
-              },
             };
           }
-
-          // ctx.fillStyle = "blue";
-          // ctx.beginPath();
-          // ctx.arc(
-          //   intersection.intersectionX,
-          //   intersection.intersectionY,
-          //   5,
-          //   0,
-          //   2 * Math.PI
-          // );
-          // ctx.fill();
         }
       }
 
@@ -190,72 +161,43 @@ export class ShootSystem extends System {
 
   draw(ctx: CanvasRenderingContext2D) {
     if (this.startPos && this.aimPos) {
-      // ctx.save();
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
 
-      // ctx.restore();
+      ctx.save();
 
-      // ctx.fillStyle = "black";
-      // ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
-
-      // ctx.save();
-
-      // ctx.translate(this.startPos.x, this.startPos.y);
-
-      // ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
-      // // Create a circular clipping path
-      // ctx.beginPath();
-      // ctx.arc(0, 0, 250, 0, Math.PI * 2);
-      // ctx.clip();
+      ctx.translate(this.startPos.x, this.startPos.y);
+      ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(
+        -Math.max(this.gameWidth, this.gameHeight),
+        -Math.max(this.gameWidth, this.gameHeight)
+      );
+      ctx.lineTo(
+        Math.max(this.gameWidth, this.gameHeight),
+        -Math.max(this.gameWidth, this.gameHeight)
+      );
+      ctx.clip();
 
       // draw background
-      // const lingrad = ctx.createLinearGradient(0, -300, 0, 0);
-      // lingrad.addColorStop(0, "rgba(0,0,0,1)");
-      // lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
-      // lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
-      // lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
-      // lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
-      // lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
-      // lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
-      // lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
-      // lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
-      // lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
-      // lingrad.addColorStop(1, "rgba(0,0,0,0)");
+      const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
+      lingrad.addColorStop(0, "rgba(0,0,0,1)");
+      lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
+      lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
+      lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
+      lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
+      lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
+      lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
+      lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+      lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
+      lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
+      lingrad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.globalCompositeOperation = "source-in";
+      ctx.fillStyle = lingrad;
+      ctx.fill();
 
-      // ctx.globalCompositeOperation = "source-in";
-      // ctx.fillStyle = "transparent";
-
-      // ctx.fill();
-
-      // ctx.restore();
-
-      // ctx.save();
-
-      // ctx.translate(this.startPos.x, this.startPos.y);
-      // ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
-      // ctx.beginPath();
-      // ctx.moveTo(0, 0);
-      // ctx.lineTo(-1600, -800);
-      // ctx.lineTo(1600, -800);
-      // ctx.clip();
-
-      // // draw background
-      // const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
-      // lingrad.addColorStop(0, "rgba(0,0,0,1)");
-      // lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
-      // lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
-      // lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
-      // lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
-      // lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
-      // lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
-      // lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
-      // lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
-      // lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
-      // lingrad.addColorStop(1, "rgba(0,0,0,0)");
-      // ctx.globalCompositeOperation = "source-in";
-      // ctx.fillStyle = lingrad;
-      // ctx.fill();
-
-      // ctx.restore();
+      ctx.restore();
 
       ctx.save();
 
@@ -265,20 +207,9 @@ export class ShootSystem extends System {
       ctx.fill();
 
       if (this.nearestIntersection) {
-        if (this.nearestIntersection.intersectedRect) {
-          const { intersectedRect } = this.nearestIntersection;
-          ctx.fillStyle = "orange";
-          ctx.fillRect(
-            intersectedRect.sx,
-            intersectedRect.sy,
-            intersectedRect.sw,
-            intersectedRect.sh
-          );
-        }
-
         // draw the line
         ctx.beginPath();
-        ctx.setLineDash([5, 15]);
+        ctx.strokeStyle = "#00FFFF";
         ctx.moveTo(this.startPos.x, this.startPos.y);
         ctx.lineTo(
           this.nearestIntersection.intersectionX,
@@ -287,7 +218,7 @@ export class ShootSystem extends System {
         ctx.stroke();
 
         // draw intersection dot
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "#00FFFF";
         ctx.beginPath();
         ctx.arc(
           this.nearestIntersection.intersectionX,
