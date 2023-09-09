@@ -3,6 +3,8 @@ import { Level } from "../Level/Level";
 import { System } from "./System";
 import Entity from "../Entity/Entity";
 import Player from "../Entity/Player";
+import Player1 from "../Entity/Player1";
+import Player2 from "../Entity/Player2";
 
 export default class PlayerSystem extends System {
   keys = new Set<"w" | "a" | "s" | "d">();
@@ -49,75 +51,36 @@ export default class PlayerSystem extends System {
     return entity instanceof Player;
   }
 
-  update(entities: Player[], dt: number, level: Level, game: Game) {
-    // const playerCell = entities.find((cell) => cell.getEntity(Player1));
-
-    // if (!playerCell) return;
-
-    // let moveToCell: Cell | undefined | null = null;
-
+  update(entities: Entity[], dt: number, level: Level, game: Game) {
     for (const entity of entities) {
-      if (this.keys.has("w")) {
-        entity.position.y -= 2;
-      }
+      if (level.levelState === "RESULT") {
+        if (entity instanceof Player1) {
+          entity.position =
+            level.player1Turn[level.playerTurnCurrentIndex].position;
+        } else if (entity instanceof Player2) {
+          entity.position =
+            level.player2Turn[level.playerTurnCurrentIndex].position;
+        }
+      } else if (
+        level.levelState === "PLAYER_1_TURN" ||
+        level.levelState === "PLAYER_2_TURN"
+      ) {
+        if (this.keys.has("w")) {
+          entity.position.y -= 2;
+        }
 
-      if (this.keys.has("a")) {
-        entity.position.x -= 2;
-      }
+        if (this.keys.has("a")) {
+          entity.position.x -= 2;
+        }
 
-      if (this.keys.has("s")) {
-        entity.position.y += 2;
-      }
+        if (this.keys.has("s")) {
+          entity.position.y += 2;
+        }
 
-      if (this.keys.has("d")) {
-        entity.position.x += 2;
+        if (this.keys.has("d")) {
+          entity.position.x += 2;
+        }
       }
     }
-
-    // if (this.keys.has("w")) {
-    //   moveToCell = entities.find(
-    //     (cell) => cell.x === playerCell.x && cell.y === playerCell.y - 1
-    //   );
-
-    //   this.keys.delete("w");
-    // }
-
-    // if (this.keys.has("a")) {
-    //   moveToCell = entities.find(
-    //     (cell) => cell.x === playerCell.x - 1 && cell.y === playerCell.y
-    //   );
-
-    //   this.keys.delete("a");
-    // }
-
-    // if (this.keys.has("s")) {
-    //   moveToCell = entities.find(
-    //     (cell) => cell.x === playerCell.x + 1 && cell.y === playerCell.y
-    //   );
-
-    //   this.keys.delete("s");
-    // }
-
-    // if (this.keys.has("d")) {
-    //   moveToCell = entities.find(
-    //     (cell) => cell.x === playerCell.x && cell.y === playerCell.y + 1
-    //   );
-
-    //   this.keys.delete("d");
-    // }
-
-    // if (moveToCell) {
-    //   // @ts-ignore
-    //   const player = playerCell.getEntity(Player1);
-
-    //   if (!player) return;
-
-    //   const newPlayerInstance = new Player1();
-
-    //   moveToCell.addEntitys(newPlayerInstance);
-
-    //   // @ts-ignore
-    //   playerCell.removeEntity(Player1);
-    // }
   }
 }

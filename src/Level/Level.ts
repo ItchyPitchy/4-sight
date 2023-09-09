@@ -5,10 +5,12 @@ import PlayerSystem from "../System/PlayerSystem";
 import { ShootSystem } from "../System/ShootSystem";
 import { PlayerTurnSystem } from "../System/PlayerTurnSystem";
 import LightsourceSystem from "../System/LightsourceSystem";
+import SightSystem from "../System/SightSystem";
 import Cell from "../Entity/Cell";
 import Entity from "../Entity/Entity";
-import Player from "../Entity/Player";
 import Wall from "../Entity/Wall";
+import Player1 from "../Entity/Player1";
+import Player2 from "../Entity/Player2";
 import RectHitbox from "../Component/RectHitbox";
 import CircleHitbox from "../Component/CircleHitbox";
 import LightSource from "../Component/LightSource";
@@ -19,12 +21,13 @@ export class Level {
   collisionSystem = new CollisionSystem();
   lightsourceSystem = new LightsourceSystem();
   shootSystem = new ShootSystem();
+  sightSystem = new SightSystem(this.game.gameWidth, this.game.gameHeight);
   playerTurnSystem = new PlayerTurnSystem();
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
-  playerTurn: "player1" | "player2" | null = "player1";
-  playerTurnTimer = 10;
+  levelState: "PLAYER_1_TURN" | "PLAYER_2_TURN" | "RESULT" = "PLAYER_1_TURN";
+  playerTurnTimer = 5;
   playerTurnCount = 0;
   player1Turn: {
     mousePos: { x: number; y: number };
@@ -36,14 +39,13 @@ export class Level {
     position: { x: number; y: number };
     shoot: boolean;
   }[] = [];
-  player1TurnCurrentIndex = 0;
+  playerTurnCurrentIndex = 0;
   texture: HTMLImageElement | null = null;
 
   constructor(
     readonly structure: Array<Array<number>>,
     background: any,
-    readonly gameWidth: number,
-    readonly gameHeight: number
+    readonly game: Game
   ) {
     const texture = new Image();
     texture.src = background;
@@ -109,16 +111,38 @@ export class Level {
             entities.push(wall);
             break;
           }
+          case 2: {
+            if (
+              this.levelState === "PLAYER_1_TURN" ||
+              this.levelState === "RESULT"
+            ) {
+              const player = new Player1(
+                {
+                  x: cellSize * index.x + this.offsetX,
+                  y: cellSize * index.y + this.offsetY,
+                },
+                { width: cellSize, height: cellSize }
+              );
+              player.addComponents(new CircleHitbox(), new LightSource());
+              entities.push(player);
+            }
+            break;
+          }
           case 3: {
-            const player = new Player(
-              {
-                x: cellSize * index.x + this.offsetX,
-                y: cellSize * index.y + this.offsetY,
-              },
-              { width: cellSize, height: cellSize }
-            );
-            player.addComponents(new CircleHitbox(), new LightSource());
-            entities.push(player);
+            if (
+              this.levelState === "PLAYER_2_TURN" ||
+              this.levelState === "RESULT"
+            ) {
+              const player = new Player2(
+                {
+                  x: cellSize * index.x + this.offsetX,
+                  y: cellSize * index.y + this.offsetY,
+                },
+                { width: cellSize, height: cellSize }
+              );
+              player.addComponents(new CircleHitbox(), new LightSource());
+              entities.push(player);
+            }
             break;
           }
           default:
@@ -131,58 +155,32 @@ export class Level {
   }
 
   update(dt: number, game: Game) {
-    if (this.playerTurn !== null) {
-      if (this.playerTurnTimer <= this.playerTurnCount) {
-        this.playerTurn = null;
-        this.buildLevel(game.gameWidth, game.gameHeight);
-      } else {
-        console.log(this.playerTurnCount);
-
-        const player = this.entities.find((entity) => entity instanceof Player);
-
-        if (player) {
-          this.player1Turn.push({
-            mousePos: game.mousePos,
-            position: {
-              x: player.position.x,
-              y: player.position.y,
-            },
-            shoot: false,
-          });
-        }
-
-        this.playerTurnCount += dt;
-
-        for (const system of [
-          this.playerSystem,
-          this.moveSystem,
-          this.collisionSystem,
-          this.lightsourceSystem,
-          this.shootSystem,
-        ]) {
-          const filteredCells = this.entities.filter(system.appliesTo);
-          system.update(filteredCells, dt, this, game);
-        }
+    if (this.levelState === "RESULT") {
+      for (const system of [
+        this.playerSystem,
+        this.moveSystem,
+        this.collisionSystem,
+        this.shootSystem,
+        this.sightSystem,
+        this.playerTurnSystem,
+      ]) {
+        const filteredCells = this.entities.filter(system.appliesTo);
+        system.update(filteredCells, dt, this, game);
       }
+
+      this.playerTurnCurrentIndex++;
     } else {
-      const player = this.entities.find((entity) => entity instanceof Player);
-
-      if (player) {
-        console.log(this.player1Turn);
-        player.position =
-          this.player1Turn[this.player1TurnCurrentIndex].position;
-        game.mousePos = this.player1Turn[this.player1TurnCurrentIndex].mousePos;
-
-        for (const system of [
-          this.moveSystem,
-          this.collisionSystem,
-          this.lightsourceSystem,
-          this.shootSystem,
-        ]) {
-          const filteredCells = this.entities.filter(system.appliesTo);
-          system.update(filteredCells, dt, this, game);
-        }
-        this.player1TurnCurrentIndex++;
+      for (const system of [
+        this.playerSystem,
+        this.moveSystem,
+        this.collisionSystem,
+        this.lightsourceSystem,
+        this.shootSystem,
+        this.sightSystem,
+        this.playerTurnSystem,
+      ]) {
+        const filteredCells = this.entities.filter(system.appliesTo);
+        system.update(filteredCells, dt, this, game);
       }
     }
   }
@@ -193,22 +191,30 @@ export class Level {
     sightCtx: CanvasRenderingContext2D
   ) {
     if (this.texture) {
-      mainCtx.drawImage(this.texture, 0, 0, this.gameWidth, this.gameHeight);
+      mainCtx.drawImage(
+        this.texture,
+        0,
+        0,
+        this.game.gameWidth,
+        this.game.gameHeight
+      );
     }
 
     for (const entity of this.entities) {
       entity.draw(mainCtx);
     }
 
-    for (const system of [
-      this.playerSystem,
-      this.moveSystem,
-      this.collisionSystem,
-    ]) {
+    for (const system of [this.shootSystem]) {
       system.draw(mainCtx);
     }
 
-    this.lightsourceSystem.draw(shadowCtx);
-    this.shootSystem.draw(sightCtx);
+    if (
+      (this.levelState === "PLAYER_1_TURN" ||
+        this.levelState === "PLAYER_2_TURN") &&
+      this.game.gameState === "RUNNING"
+    ) {
+      this.lightsourceSystem.draw(shadowCtx);
+      this.sightSystem.draw(sightCtx);
+    }
   }
 }

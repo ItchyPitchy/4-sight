@@ -49,7 +49,6 @@ export class CollisionSystem extends System {
           );
 
           if (collision) {
-            console.log(collision);
             this.resolveCircleRectCollision(
               entityWithCircleHitbox,
               entityWithRectHitbox

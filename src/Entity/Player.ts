@@ -1,6 +1,8 @@
 import Entity from "./Entity";
 
 export default class Player extends Entity {
+  degrees: number = 0;
+
   constructor(
     position: { x: number; y: number },
     size: { width: number; height: number }
@@ -8,20 +10,5 @@ export default class Player extends Entity {
     super(position, size);
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.save();
-
-    ctx.fillStyle = "#543";
-    ctx.beginPath();
-    ctx.arc(
-      this.position.x,
-      this.position.y,
-      this.size.width / 2,
-      0,
-      2 * Math.PI
-    );
-    ctx.fill();
-
-    ctx.restore();
-  }
+  draw(ctx: CanvasRenderingContext2D): void {}
 }

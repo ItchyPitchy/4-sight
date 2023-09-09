@@ -4,19 +4,23 @@ import { System } from "./System";
 import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
 import Player from "../Entity/Player";
+import Player1 from "../Entity/Player1";
+import Player2 from "../Entity/Player2";
 import { Vector } from "../Component/Vector";
 import CircleHitbox from "../Component/CircleHitbox";
 import RectHitbox from "../Component/RectHitbox";
+import PlasmaBullet from "../Entity/PlasmaBullet";
+import IckyBullet from "../Entity/IckyBullet";
 
 export class ShootSystem extends System {
   gameWidth: number = 0;
   gameHeight: number = 0;
-  startPos: { x: number; y: number } | null = null;
-  aimPos: { x: number; y: number } | null = null;
-  nearestIntersection: {
+  startPos: { x: number; y: number }[] = [];
+  aimPos: { x: number; y: number }[] = [];
+  nearestIntersections: {
     intersectionX: number;
     intersectionY: number;
-  } | null = null;
+  }[] = [];
 
   constructor() {
     super();
@@ -32,33 +36,118 @@ export class ShootSystem extends System {
 
     const players = entities.filter((entity) => entity instanceof Player);
 
-    // if (!players) return;
+    const aimPoss = [];
+    const startPoss = [];
+    const nearestIntersections = [];
 
-    for (const player of players) {
+    for (const player of players as Player[]) {
       const playerCenter = {
-        x: player.position.x, // + player.size.width / 2,
-        y: player.position.y, // + player.size.height / 2,
+        x: player.position.x,
+        y: player.position.y,
       };
 
-      if (!game.mousePos) return null;
+      const startPos = {
+        x: 0,
+        y: 0,
+      };
 
-      this.startPos = {
-        x:
+      if (level.levelState === "RESULT") {
+        if (player instanceof Player1) {
+          startPos.x =
+            playerCenter.x +
+            (player.size.width / 2) *
+              Math.cos(
+                this.getDegrees(
+                  player.position,
+                  level.player1Turn[level.playerTurnCurrentIndex].mousePos
+                )
+              );
+          startPos.y =
+            playerCenter.y +
+            (player.size.height / 2) *
+              Math.sin(
+                this.getDegrees(
+                  player.position,
+                  level.player1Turn[level.playerTurnCurrentIndex].mousePos
+                )
+              );
+
+          player.degrees =
+            this.getDegrees(
+              player.position,
+              level.player1Turn[level.playerTurnCurrentIndex].mousePos
+            ) +
+            Math.PI / 2;
+        } else if (player instanceof Player2) {
+          startPos.x =
+            playerCenter.x +
+            (player.size.width / 2) *
+              Math.cos(
+                this.getDegrees(
+                  player.position,
+                  level.player2Turn[level.playerTurnCurrentIndex].mousePos
+                )
+              );
+          startPos.y =
+            playerCenter.y +
+            (player.size.height / 2) *
+              Math.sin(
+                this.getDegrees(
+                  player.position,
+                  level.player2Turn[level.playerTurnCurrentIndex].mousePos
+                )
+              );
+
+          player.degrees =
+            this.getDegrees(
+              player.position,
+              level.player2Turn[level.playerTurnCurrentIndex].mousePos
+            ) +
+            Math.PI / 2;
+        }
+      } else {
+        startPos.x =
           playerCenter.x +
           (player.size.width / 2) *
-            Math.cos(this.getDegrees(player.position, game.mousePos)),
-        y:
+            Math.cos(this.getDegrees(player.position, game.mousePos));
+        startPos.y =
           playerCenter.y +
           (player.size.height / 2) *
-            Math.sin(this.getDegrees(player.position, game.mousePos)),
-      };
+            Math.sin(this.getDegrees(player.position, game.mousePos));
 
-      if (!game.mousePos) return;
+        player.degrees =
+          this.getDegrees(player.position, game.mousePos) + Math.PI / 2;
+      }
 
-      const vector = {
-        x: game.mousePos.x - player.position.x,
-        y: game.mousePos.y - player.position.y,
-      };
+      startPoss.push(startPos);
+
+      const vector = new Vector(0, 0);
+
+      if (level.levelState === "RESULT") {
+        if (player instanceof Player1) {
+          if (level.player1Turn[level.playerTurnCurrentIndex]) {
+            vector.x =
+              level.player1Turn[level.playerTurnCurrentIndex].mousePos.x -
+              player.position.x;
+            vector.y =
+              level.player1Turn[level.playerTurnCurrentIndex].mousePos.y -
+              player.position.y;
+          }
+        } else if (player instanceof Player2) {
+          if (level.player2Turn[level.playerTurnCurrentIndex]) {
+            vector.x =
+              level.player2Turn[level.playerTurnCurrentIndex].mousePos.x -
+              player.position.x;
+            vector.y =
+              level.player2Turn[level.playerTurnCurrentIndex].mousePos.y -
+              player.position.y;
+          }
+        }
+      } else {
+        vector.x = game.mousePos.x - player.position.x;
+        vector.y = game.mousePos.y - player.position.y;
+      }
+
       const mousePosBasedMagnitude = Math.sqrt(
         Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
       );
@@ -76,15 +165,17 @@ export class ShootSystem extends System {
           Math.sqrt(Math.pow(game.gameWidth, 2) + Math.pow(game.gameHeight, 2)),
       };
 
-      this.aimPos = {
-        x: this.startPos.x + magnitude.x,
-        y: this.startPos.y + magnitude.y,
+      const aimPos = {
+        x: startPos.x + magnitude.x,
+        y: startPos.y + magnitude.y,
       };
 
-      const x1: number = this.aimPos.x; // points for line (controlled by mouse)
-      const y1: number = this.aimPos.y;
-      const x2: number = this.startPos.x; // static point
-      const y2: number = this.startPos.y;
+      aimPoss.push(aimPos);
+
+      const x1: number = aimPos.x; // points for line (controlled by mouse)
+      const y1: number = aimPos.y;
+      const x2: number = startPos.x; // static point
+      const y2: number = startPos.y;
 
       let nearestIntersection: {
         intersectionX: number;
@@ -134,101 +225,108 @@ export class ShootSystem extends System {
         }
       }
 
-      this.nearestIntersection = nearestIntersection;
+      nearestIntersections.push(nearestIntersection);
 
-      if (
-        game.keys.has("leftClick") ||
-        (level.playerTurn === null &&
-          level.player1Turn[level.player1TurnCurrentIndex].shoot)
-      ) {
-        const bullet = new Bullet(
-          { x: this.startPos.x, y: this.startPos.y },
-          5
-        );
-        bullet.addComponents(
-          new Vector(norm.x * 1000, norm.y * 1000),
-          new CircleHitbox()
-        );
+      if (level.levelState === "RESULT") {
+        if (
+          player instanceof Player1 &&
+          level.player1Turn[level.playerTurnCurrentIndex].shoot === true
+        ) {
+          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 20);
+          bullet.addComponents(
+            new Vector(norm.x * 1000, norm.y * 1000),
+            new CircleHitbox()
+          );
 
-        level.player1Turn[level.player1Turn.length - 1].shoot = true;
+          level.entities.push(bullet);
+        }
 
-        level.entities.push(bullet);
+        if (
+          player instanceof Player2 &&
+          level.player2Turn[level.playerTurnCurrentIndex].shoot === true
+        ) {
+          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 20);
+          bullet.addComponents(
+            new Vector(norm.x * 1000, norm.y * 1000),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        }
+      } else if (game.keys.has("leftClick")) {
+        if (player instanceof Player1 && level.levelState === "PLAYER_1_TURN") {
+          level.player1Turn[level.player1Turn.length - 1].shoot = true;
+
+          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 20);
+          bullet.addComponents(
+            new Vector(norm.x * 1000, norm.y * 1000),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        } else if (
+          player instanceof Player2 &&
+          level.levelState === "PLAYER_2_TURN"
+        ) {
+          level.player2Turn[level.player2Turn.length - 1].shoot = true;
+
+          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 20);
+          bullet.addComponents(
+            new Vector(norm.x * 1000, norm.y * 1000),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        }
 
         game.keys.delete("leftClick");
       }
+
+      this.startPos = startPoss;
+      this.aimPos = aimPoss;
+      this.nearestIntersections = nearestIntersections;
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.startPos && this.aimPos) {
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
-
-      ctx.save();
-
-      ctx.translate(this.startPos.x, this.startPos.y);
-      ctx.rotate(this.getDegrees(this.startPos, this.aimPos) + Math.PI / 2);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(
-        -Math.max(this.gameWidth, this.gameHeight),
-        -Math.max(this.gameWidth, this.gameHeight)
+    for (
+      let i = 0;
+      i <
+      Math.min(
+        this.startPos.length,
+        this.aimPos.length,
+        this.nearestIntersections.length
       );
-      ctx.lineTo(
-        Math.max(this.gameWidth, this.gameHeight),
-        -Math.max(this.gameWidth, this.gameHeight)
-      );
-      ctx.clip();
-
-      // draw background
-      const lingrad = ctx.createLinearGradient(0, -800, 0, 0);
-      lingrad.addColorStop(0, "rgba(0,0,0,1)");
-      lingrad.addColorStop(0.1, "rgba(0,0,0,0.9)");
-      lingrad.addColorStop(0.2, "rgba(0,0,0,0.8)");
-      lingrad.addColorStop(0.3, "rgba(0,0,0,0.7)");
-      lingrad.addColorStop(0.4, "rgba(0,0,0,0.6)");
-      lingrad.addColorStop(0.5, "rgba(0,0,0,0.5)");
-      lingrad.addColorStop(0.6, "rgba(0,0,0,0.4)");
-      lingrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
-      lingrad.addColorStop(0.8, "rgba(0,0,0,0.2)");
-      lingrad.addColorStop(0.9, "rgba(0,0,0,0.1)");
-      lingrad.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.globalCompositeOperation = "source-in";
-      ctx.fillStyle = lingrad;
-      ctx.fill();
-
-      ctx.restore();
-
+      i++
+    ) {
       ctx.save();
 
       ctx.fillStyle = "orange";
       ctx.beginPath();
-      ctx.arc(this.startPos.x, this.startPos.y, 5, 0, 2 * Math.PI);
+      ctx.arc(this.startPos[i].x, this.startPos[i].y, 5, 0, 2 * Math.PI);
       ctx.fill();
 
-      if (this.nearestIntersection) {
-        // draw the line
-        ctx.beginPath();
-        ctx.strokeStyle = "#00FFFF";
-        ctx.moveTo(this.startPos.x, this.startPos.y);
-        ctx.lineTo(
-          this.nearestIntersection.intersectionX,
-          this.nearestIntersection.intersectionY
-        );
-        ctx.stroke();
+      // draw the line
+      ctx.beginPath();
+      ctx.strokeStyle = "#00FFFF";
+      ctx.moveTo(this.startPos[i].x, this.startPos[i].y);
+      ctx.lineTo(
+        this.nearestIntersections[i].intersectionX,
+        this.nearestIntersections[i].intersectionY
+      );
+      ctx.stroke();
 
-        // draw intersection dot
-        ctx.fillStyle = "#00FFFF";
-        ctx.beginPath();
-        ctx.arc(
-          this.nearestIntersection.intersectionX,
-          this.nearestIntersection.intersectionY,
-          5,
-          0,
-          2 * Math.PI
-        );
-        ctx.fill();
-      }
+      // draw intersection dot
+      ctx.fillStyle = "#00FFFF";
+      ctx.beginPath();
+      ctx.arc(
+        this.nearestIntersections[i].intersectionX,
+        this.nearestIntersections[i].intersectionY,
+        5,
+        0,
+        2 * Math.PI
+      );
+      ctx.fill();
 
       ctx.restore();
     }
