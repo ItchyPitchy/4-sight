@@ -5,6 +5,8 @@ import { Hitbox } from "../Component/Hitbox.js";
 import { Vector } from "../Component/Vector.js";
 import CircleHitbox from "../Component/CircleHitbox.js";
 import RectHitbox from "../Component/RectHitbox.js";
+import Player from "../Entity/Player.js";
+import Bullet from "../Entity/Bullet.js";
 
 export class CollisionSystem extends System {
   constructor() {
@@ -47,6 +49,14 @@ export class CollisionSystem extends System {
             entityWithCircleHitbox,
             entityWithRectHitbox
           );
+
+          if (
+            entityWithRectHitbox instanceof Player &&
+            entityWithCircleHitbox instanceof Bullet &&
+            level.levelState === "RESULT"
+          ) {
+            entityWithRectHitbox.health -= 1;
+          }
 
           if (collision) {
             this.resolveCircleRectCollision(
@@ -158,49 +168,49 @@ export class CollisionSystem extends System {
     const topOffset = cy - ry;
     const bottomOffset = ry + rh - cy;
 
-    const circleEntityVector = entityWithCircleHitbox.getComponent(Vector) as
-      | Vector
-      | undefined;
+    if (entityWithCircleHitbox.hasComponent(Vector)) {
+      const circleEntityVector = entityWithCircleHitbox.getComponent(Vector);
 
-    if (circleEntityVector) {
-      if (
-        leftOffset < topOffset &&
-        leftOffset < bottomOffset &&
-        circleEntityVector.x > 0
-      ) {
-        entityWithCircleHitbox.position.x =
-          entityWithRectHitbox.position.x -
-          entityWithCircleHitbox.size.width / 2;
-        circleEntityVector.x = -circleEntityVector.x;
-      } else if (
-        rightOffset < topOffset &&
-        rightOffset < bottomOffset &&
-        circleEntityVector.x < 0
-      ) {
-        entityWithCircleHitbox.position.x =
-          entityWithRectHitbox.position.x +
-          entityWithRectHitbox.size.width +
-          entityWithCircleHitbox.size.width / 2;
-        circleEntityVector.x = -circleEntityVector.x;
-      } else if (
-        topOffset < leftOffset &&
-        topOffset < rightOffset &&
-        circleEntityVector.y > 0
-      ) {
-        entityWithCircleHitbox.position.y =
-          entityWithRectHitbox.position.y -
-          entityWithCircleHitbox.size.height / 2;
-        circleEntityVector.y = -circleEntityVector.y;
-      } else if (
-        bottomOffset < leftOffset &&
-        bottomOffset < rightOffset &&
-        circleEntityVector.y < 0
-      ) {
-        entityWithCircleHitbox.position.y =
-          entityWithRectHitbox.position.y +
-          entityWithRectHitbox.size.height +
-          entityWithCircleHitbox.size.height / 2;
-        circleEntityVector.y = -circleEntityVector.y;
+      if (circleEntityVector) {
+        if (
+          leftOffset < topOffset &&
+          leftOffset < bottomOffset &&
+          circleEntityVector.x > 0
+        ) {
+          entityWithCircleHitbox.position.x =
+            entityWithRectHitbox.position.x -
+            entityWithCircleHitbox.size.width / 2;
+          circleEntityVector.x = -circleEntityVector.x;
+        } else if (
+          rightOffset < topOffset &&
+          rightOffset < bottomOffset &&
+          circleEntityVector.x < 0
+        ) {
+          entityWithCircleHitbox.position.x =
+            entityWithRectHitbox.position.x +
+            entityWithRectHitbox.size.width +
+            entityWithCircleHitbox.size.width / 2;
+          circleEntityVector.x = -circleEntityVector.x;
+        } else if (
+          topOffset < leftOffset &&
+          topOffset < rightOffset &&
+          circleEntityVector.y > 0
+        ) {
+          entityWithCircleHitbox.position.y =
+            entityWithRectHitbox.position.y -
+            entityWithCircleHitbox.size.height / 2;
+          circleEntityVector.y = -circleEntityVector.y;
+        } else if (
+          bottomOffset < leftOffset &&
+          bottomOffset < rightOffset &&
+          circleEntityVector.y < 0
+        ) {
+          entityWithCircleHitbox.position.y =
+            entityWithRectHitbox.position.y +
+            entityWithRectHitbox.size.height +
+            entityWithCircleHitbox.size.height / 2;
+          circleEntityVector.y = -circleEntityVector.y;
+        }
       }
     } else {
       if (leftOffset < topOffset && leftOffset < bottomOffset) {

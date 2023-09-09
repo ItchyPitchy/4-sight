@@ -55,6 +55,9 @@ export default class PlayerSystem extends System {
     for (const entity of entities) {
       if (level.levelState === "RESULT") {
         if (entity instanceof Player1) {
+          if (!level.player1Turn[level.playerTurnCurrentIndex]) {
+            console.log(level.player1Turn);
+          }
           entity.position =
             level.player1Turn[level.playerTurnCurrentIndex].position;
         } else if (entity instanceof Player2) {

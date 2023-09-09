@@ -6,9 +6,11 @@ export default class Player1 extends Player {
 
   constructor(
     position: { x: number; y: number },
-    size: { width: number; height: number }
+    size: { width: number; height: number },
+    degrees: number,
+    health: number
   ) {
-    super(position, size);
+    super(position, size, degrees, health);
 
     const texture = new Image();
     texture.src = player1Img;

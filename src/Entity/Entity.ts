@@ -1,11 +1,13 @@
 import Component from "../Component/Component";
 
+export type Constructor<T> = new (...args: any[]) => T;
+
 export default class Entity {
   components: Component[] = [];
 
   constructor(
     public position: { x: number; y: number },
-    public size: { width: number, height: number }
+    public size: { width: number; height: number }
   ) {}
 
   distanceTo(entity: Entity) {
@@ -15,14 +17,16 @@ export default class Entity {
     );
   }
 
-  getComponent(type: Component) {
+  getComponent<T>(type: Constructor<T>): T {
     for (const component of this.components) {
-      // @ts-ignore
       if (component instanceof type) {
-        // @ts-ignore
         return component;
       }
     }
+
+    throw new Error(
+      `Failed to get component type ${type}. Please run hasComponent first!`
+    );
   }
 
   addComponents(...components: Component[]) {

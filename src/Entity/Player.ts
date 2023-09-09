@@ -1,11 +1,11 @@
 import Entity from "./Entity";
 
 export default class Player extends Entity {
-  degrees: number = 0;
-
   constructor(
     position: { x: number; y: number },
-    size: { width: number; height: number }
+    size: { width: number; height: number },
+    public degrees: number,
+    public health: number
   ) {
     super(position, size);
   }

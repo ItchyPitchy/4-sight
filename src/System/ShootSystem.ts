@@ -1,7 +1,6 @@
 import Game from "../game";
 import { Level } from "../Level/Level";
 import { System } from "./System";
-import Bullet from "../Entity/Bullet";
 import Entity from "../Entity/Entity";
 import Player from "../Entity/Player";
 import Player1 from "../Entity/Player1";
@@ -11,6 +10,7 @@ import CircleHitbox from "../Component/CircleHitbox";
 import RectHitbox from "../Component/RectHitbox";
 import PlasmaBullet from "../Entity/PlasmaBullet";
 import IckyBullet from "../Entity/IckyBullet";
+import { getDegrees } from "../getDegrees";
 
 export class ShootSystem extends System {
   gameWidth: number = 0;
@@ -57,7 +57,7 @@ export class ShootSystem extends System {
             playerCenter.x +
             (player.size.width / 2) *
               Math.cos(
-                this.getDegrees(
+                getDegrees(
                   player.position,
                   level.player1Turn[level.playerTurnCurrentIndex].mousePos
                 )
@@ -66,14 +66,14 @@ export class ShootSystem extends System {
             playerCenter.y +
             (player.size.height / 2) *
               Math.sin(
-                this.getDegrees(
+                getDegrees(
                   player.position,
                   level.player1Turn[level.playerTurnCurrentIndex].mousePos
                 )
               );
 
           player.degrees =
-            this.getDegrees(
+            getDegrees(
               player.position,
               level.player1Turn[level.playerTurnCurrentIndex].mousePos
             ) +
@@ -83,7 +83,7 @@ export class ShootSystem extends System {
             playerCenter.x +
             (player.size.width / 2) *
               Math.cos(
-                this.getDegrees(
+                getDegrees(
                   player.position,
                   level.player2Turn[level.playerTurnCurrentIndex].mousePos
                 )
@@ -92,14 +92,14 @@ export class ShootSystem extends System {
             playerCenter.y +
             (player.size.height / 2) *
               Math.sin(
-                this.getDegrees(
+                getDegrees(
                   player.position,
                   level.player2Turn[level.playerTurnCurrentIndex].mousePos
                 )
               );
 
           player.degrees =
-            this.getDegrees(
+            getDegrees(
               player.position,
               level.player2Turn[level.playerTurnCurrentIndex].mousePos
             ) +
@@ -109,14 +109,14 @@ export class ShootSystem extends System {
         startPos.x =
           playerCenter.x +
           (player.size.width / 2) *
-            Math.cos(this.getDegrees(player.position, game.mousePos));
+            Math.cos(getDegrees(player.position, game.mousePos));
         startPos.y =
           playerCenter.y +
           (player.size.height / 2) *
-            Math.sin(this.getDegrees(player.position, game.mousePos));
+            Math.sin(getDegrees(player.position, game.mousePos));
 
         player.degrees =
-          this.getDegrees(player.position, game.mousePos) + Math.PI / 2;
+          getDegrees(player.position, game.mousePos) + Math.PI / 2;
       }
 
       startPoss.push(startPos);
@@ -255,6 +255,7 @@ export class ShootSystem extends System {
         }
       } else if (game.keys.has("leftClick")) {
         if (player instanceof Player1 && level.levelState === "PLAYER_1_TURN") {
+          console.log(level.player1Turn);
           level.player1Turn[level.player1Turn.length - 1].shoot = true;
 
           const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 20);
@@ -389,48 +390,5 @@ export class ShootSystem extends System {
       return { intersectionX, intersectionY };
     }
     return null;
-  }
-
-  getDegrees(
-    startPos: { x: number; y: number },
-    mousePos: { x: number; y: number }
-  ) {
-    if (!mousePos) throw new Error("No mousePos");
-
-    if (mousePos.y > startPos.y) {
-      if (mousePos.x > startPos.x) {
-        const angle = Math.atan(
-          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
-        );
-
-        return angle;
-      } else {
-        const angle =
-          Math.atan(
-            Math.abs(mousePos.x - startPos.x) /
-              Math.abs(mousePos.y - startPos.y)
-          ) +
-          Math.PI / 2;
-
-        return angle;
-      }
-    } else {
-      if (mousePos.x > startPos.x) {
-        const angle = -Math.atan(
-          Math.abs(mousePos.y - startPos.y) / Math.abs(mousePos.x - startPos.x)
-        );
-
-        return angle;
-      } else {
-        const angle =
-          -Math.atan(
-            Math.abs(mousePos.x - startPos.x) /
-              Math.abs(mousePos.y - startPos.y)
-          ) -
-          Math.PI / 2;
-
-        return angle;
-      }
-    }
   }
 }
