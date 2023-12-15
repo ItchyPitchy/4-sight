@@ -1,5 +1,5 @@
 import Player from "./Player";
-import player2Img from "../player2.png";
+import player2Img from "../assets/player2.png";
 
 export default class Player2 extends Player {
   texture: HTMLImageElement | null = null;

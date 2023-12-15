@@ -36,22 +36,30 @@ const processSegments = (lightSource: Point, segments: Segment[]) => {
   return segments;
 };
 
-export function loadMap(room: Rectangle, blocks: Rectangle[], walls: Segment[], lightSource: Point): EndPoint[] {
-  const segments: Segment[] = [];
-  for (const segment of room.getCornerSegments()) {
-    segments.push(segment);
-  }
-  for (const block of blocks) {
-    for (const segment of block.getCornerSegments()) {
+export function loadMap(
+  room: Rectangle,
+  blocks: Rectangle[],
+  walls: Segment[],
+  lightSources: Point[]
+): EndPoint[] {
+  const endPoints: EndPoint[] = [];
+
+  for (const lightSource of lightSources) {
+    const segments: Segment[] = [];
+    for (const segment of room.getCornerSegments()) {
       segments.push(segment);
     }
-  }
-  for (const segment of walls) {
-    segments.push(segment);
-  }
-  const endPoints: EndPoint[] = [];
-  for (const segment of processSegments(lightSource, segments)) {
-    endPoints.push(segment.p1, segment.p2);
+    for (const block of blocks) {
+      for (const segment of block.getCornerSegments()) {
+        segments.push(segment);
+      }
+    }
+    for (const segment of walls) {
+      segments.push(segment);
+    }
+    for (const segment of processSegments(lightSource, segments)) {
+      endPoints.push(segment.p1, segment.p2);
+    }
   }
   return endPoints;
 }

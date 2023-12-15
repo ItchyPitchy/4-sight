@@ -1,5 +1,5 @@
 import Bullet from "./Bullet";
-import ickybullet from "../ickybullet.png";
+import ickybullet from "../assets/ickybullet.png";
 
 export default class IckyBullet extends Bullet {
   texture: HTMLImageElement | null = null;

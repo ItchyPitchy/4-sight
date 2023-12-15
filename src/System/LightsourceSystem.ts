@@ -13,7 +13,7 @@ import { Point } from "../point";
 
 export default class LightsourceSystem extends System {
   room: Rectangle | null = null;
-  lightSource: Point | null = null;
+  lightSources: Point[] = []; 
   blocks: Rectangle[] = [];
   walls: Segment[] = [];
   visibility: Point[][] = [];
@@ -27,61 +27,64 @@ export default class LightsourceSystem extends System {
   }
 
   update(entities: Entity[], dt: number, level: Level, game: Game) {
-    const player = entities.find((entity) => entity instanceof Player);
-    const walls = entities.filter((entity) => entity instanceof Wall);
+    this.lightSources = [];
+    const lightSourceEntities = entities.filter((entity) =>
+      entity.hasComponent(LightSource)
+    );
 
-    if (!player) {
-      this.lightSource = null;
-      return;
-    }
+    const walls = entities.filter((entity) => entity instanceof Wall);
+    ///console.log(lightSourceEntities)
+
+    // if (!lightSourceEntities) {
+    //   this.lightSource = null;
+    //   return;
+    // }
 
     if (!game.mousePos) return;
 
-    // Setup scene
-    this.room = new Rectangle(0, 0, game.gameWidth, game.gameHeight);
+    for (const lightSourceEntity of lightSourceEntities) {
+      // Setup scene
+      this.room = new Rectangle(0, 0, game.gameWidth, game.gameHeight);
 
-    this.walls = [];
+      this.walls = [];
 
-    this.blocks = walls.map(
-      (entity) =>
-        new Rectangle(
-          entity.position.x,
-          entity.position.y,
-          entity.size.width,
-          entity.size.height
-        )
-    );
+      this.blocks = walls.map(
+        (entity) =>
+          new Rectangle(
+            entity.position.x,
+            entity.position.y,
+            entity.size.width,
+            entity.size.height
+          )
+      );
 
-    const lightSourceOrigin = {
-      x:
-        player.position.x +
-        (player.size.width / 2) *
-          Math.cos(this.getDegrees(player.position, game.mousePos)),
-      y:
-        player.position.y +
-        (player.size.height / 2) *
-          Math.sin(this.getDegrees(player.position, game.mousePos)),
-    };
+      const lightSourceOrigin = {
+        x: lightSourceEntity.position.x + lightSourceEntity.size.width / 2,
+        y: lightSourceEntity.position.y + lightSourceEntity.size.height / 2,
+      };
 
-    // Test lightsource middle of map
-    this.lightSource = new Point(lightSourceOrigin.x, lightSourceOrigin.y);
+      const lightSource = new Point(lightSourceOrigin.x, lightSourceOrigin.y);
 
-    const endpoints = loadMap(
-      this.room,
-      this.blocks,
-      this.walls,
-      this.lightSource
-    );
-    this.visibility = calculateVisibility(this.lightSource, endpoints);
+      // Test lightsource middle of map
+      this.lightSources.push(lightSource);
+
+      const endpoints = loadMap(
+        this.room,
+        this.blocks,
+        this.walls,
+        this.lightSources
+      );
+      this.visibility = calculateVisibility(this.lightSources, endpoints);
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!this.lightSource || !this.room) return;
+    if (!this.room) return;
 
     this.drawVisibilityTriangles(
       ctx,
       "gray",
-      this.lightSource,
+      this.lightSources,
       this.visibility
     );
   }
@@ -111,30 +114,32 @@ export default class LightsourceSystem extends System {
   drawVisibilityTriangles(
     ctx: CanvasRenderingContext2D,
     color: string,
-    lightSource: Point,
+    lightSources: Point[],
     visibilityOutput: Point[][]
   ) {
-    ctx.save();
+    for (const lightSource of lightSources) {
+      ctx.save();
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, this.room!.width, this.room!.height);
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, this.room!.width, this.room!.height);
 
-    ctx.globalCompositeOperation = "source-out";
+      ctx.globalCompositeOperation = "source-out";
 
-    ctx.beginPath();
+      ctx.beginPath();
 
-    for (const points of visibilityOutput) {
-      ctx.moveTo(lightSource.x, lightSource.y);
-      ctx.lineTo(points[0].x, points[0].y);
-      ctx.lineTo(points[1].x, points[1].y);
+      for (const points of visibilityOutput) {
+        ctx.moveTo(lightSource.x, lightSource.y);
+        ctx.lineTo(points[0].x, points[0].y);
+        ctx.lineTo(points[1].x, points[1].y);
+      }
+
+      ctx.clip();
+
+      ctx.fillStyle = "transparent";
+      ctx.fill();
+
+      ctx.restore();
     }
-
-    ctx.clip();
-
-    ctx.fillStyle = "transparent";
-    ctx.fill();
-
-    ctx.restore();
   }
 
   getDegrees(

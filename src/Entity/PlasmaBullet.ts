@@ -1,5 +1,5 @@
 import Bullet from "./Bullet";
-import plasmabullet from "../plasmabullet.png";
+import plasmabullet from "../assets/plasmabullet.png";
 
 export default class PlasmaBullet extends Bullet {
   texture: HTMLImageElement | null = null;

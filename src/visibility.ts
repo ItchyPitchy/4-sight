@@ -42,53 +42,59 @@ function getTrianglePoints(
 }
 
 export function calculateVisibility(
-  origin: Point,
+  origins: Point[],
   endpoints: EndPoint[]
 ): Point[][] {
-  const openSegments = [];
   const output = [];
-  let beginAngle = 0;
 
-  endpoints.sort(endpointCompare);
+  for (const origin of origins) {
+    let beginAngle = 0;
+    const openSegments = [];
 
-  for (let pass = 0; pass < 2; pass += 1) {
-    for (const endpoint of endpoints) {
-      const openSegment = openSegments[0];
+    endpoints.sort(endpointCompare);
 
-      if (endpoint.beginsSegment) {
-        let index = 0;
-        let segment = openSegments[index];
-        while (segment && segmentInFrontOf(endpoint.segment, segment, origin)) {
-          index += 1;
-          segment = openSegments[index];
-        }
+    for (let pass = 0; pass < 2; pass += 1) {
+      for (const endpoint of endpoints) {
+        const openSegment = openSegments[0];
 
-        if (!segment) {
-          openSegments.push(endpoint.segment);
+        if (endpoint.beginsSegment) {
+          let index = 0;
+          let segment = openSegments[index];
+          while (
+            segment &&
+            segmentInFrontOf(endpoint.segment, segment, origin)
+          ) {
+            index += 1;
+            segment = openSegments[index];
+          }
+
+          if (!segment) {
+            openSegments.push(endpoint.segment);
+          } else {
+            openSegments.splice(index, 0, endpoint.segment);
+          }
         } else {
-          openSegments.splice(index, 0, endpoint.segment);
+          const index = openSegments.indexOf(endpoint.segment);
+          if (index > -1) {
+            openSegments.splice(index, 1);
+          }
         }
-      } else {
-        const index = openSegments.indexOf(endpoint.segment);
-        if (index > -1) {
-          openSegments.splice(index, 1);
-        }
-      }
 
-      if (openSegment !== openSegments[0]) {
-        if (pass === 1) {
-          const trianglePoints = getTrianglePoints(
-            origin,
-            beginAngle,
-            endpoint.angle,
-            openSegment
-          );
-          output.push(trianglePoints);
+        if (openSegment !== openSegments[0]) {
+          if (pass === 1) {
+            const trianglePoints = getTrianglePoints(
+              origin,
+              beginAngle,
+              endpoint.angle,
+              openSegment
+            );
+            output.push(trianglePoints);
+          }
+          beginAngle = endpoint.angle;
         }
-        beginAngle = endpoint.angle;
       }
     }
   }
-
+  
   return output;
 }

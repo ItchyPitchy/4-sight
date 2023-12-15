@@ -5,11 +5,15 @@ import Entity from "../Entity/Entity";
 import Player from "../Entity/Player";
 import Player1 from "../Entity/Player1";
 import Player2 from "../Entity/Player2";
+import Player3 from "../Entity/Player3";
+import Player4 from "../Entity/Player4";
 import { Vector } from "../Component/Vector";
 import CircleHitbox from "../Component/CircleHitbox";
 import RectHitbox from "../Component/RectHitbox";
 import PlasmaBullet from "../Entity/PlasmaBullet";
 import IckyBullet from "../Entity/IckyBullet";
+import OwlySkott from "../Entity/OwlySkott";
+import CrustlingSkott from "../Entity/CrustlingSkott";
 import { getDegrees } from "../getDegrees";
 
 export class ShootSystem extends System {
@@ -78,6 +82,7 @@ export class ShootSystem extends System {
               level.player1Turn[level.playerTurnCurrentIndex].mousePos
             ) +
             Math.PI / 2;
+
         } else if (player instanceof Player2) {
           startPos.x =
             playerCenter.x +
@@ -104,6 +109,61 @@ export class ShootSystem extends System {
               level.player2Turn[level.playerTurnCurrentIndex].mousePos
             ) +
             Math.PI / 2;
+            
+          } else if (player instanceof Player3) {
+            startPos.x =
+              playerCenter.x +
+              (player.size.width / 2) *
+                Math.cos(
+                  getDegrees(
+                    player.position,
+                    level.player3Turn[level.playerTurnCurrentIndex].mousePos
+                  )
+                );
+            startPos.y =
+              playerCenter.y +
+              (player.size.height / 2) *
+                Math.sin(
+                  getDegrees(
+                    player.position,
+                    level.player3Turn[level.playerTurnCurrentIndex].mousePos
+                  )
+                );
+  
+            player.degrees =
+              getDegrees(
+                player.position,
+                level.player3Turn[level.playerTurnCurrentIndex].mousePos
+              ) +
+              Math.PI / 2;
+
+            } else if (player instanceof Player4) {
+              startPos.x =
+                playerCenter.x +
+                (player.size.width / 2) *
+                  Math.cos(
+                    getDegrees(
+                      player.position,
+                      level.player4Turn[level.playerTurnCurrentIndex].mousePos
+                    )
+                  );
+              startPos.y =
+                playerCenter.y +
+                (player.size.height / 2) *
+                  Math.sin(
+                    getDegrees(
+                      player.position,
+                      level.player4Turn[level.playerTurnCurrentIndex].mousePos
+                    )
+                  );
+    
+              player.degrees =
+                getDegrees(
+                  player.position,
+                  level.player4Turn[level.playerTurnCurrentIndex].mousePos
+                ) +
+                Math.PI / 2;
+
         }
       } else {
         startPos.x =
@@ -124,6 +184,7 @@ export class ShootSystem extends System {
       const vector = new Vector(0, 0);
 
       if (level.levelState === "RESULT") {
+
         if (player instanceof Player1) {
           if (level.player1Turn[level.playerTurnCurrentIndex]) {
             vector.x =
@@ -142,6 +203,25 @@ export class ShootSystem extends System {
               level.player2Turn[level.playerTurnCurrentIndex].mousePos.y -
               player.position.y;
           }
+        } else if (player instanceof Player3) {
+          if (level.player3Turn[level.playerTurnCurrentIndex]) {
+            vector.x =
+              level.player3Turn[level.playerTurnCurrentIndex].mousePos.x -
+              player.position.x;
+            vector.y =
+              level.player2Turn[level.playerTurnCurrentIndex].mousePos.y -
+              player.position.y;
+          }
+        } else if (player instanceof Player4) {
+          if (level.player4Turn[level.playerTurnCurrentIndex]) {
+            vector.x =
+              level.player4Turn[level.playerTurnCurrentIndex].mousePos.x -
+              player.position.x;
+            vector.y =
+              level.player4Turn[level.playerTurnCurrentIndex].mousePos.y -
+              player.position.y;
+      }
+      
         }
       } else {
         vector.x = game.mousePos.x - player.position.x;
@@ -232,10 +312,10 @@ export class ShootSystem extends System {
           player instanceof Player1 &&
           level.player1Turn[level.playerTurnCurrentIndex].shoot === true
         ) {
-          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 20);
+          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 15);
           bullet.addComponents(
-            new Vector(norm.x * 1000, norm.y * 1000),
-            new CircleHitbox()
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox(),
           );
 
           level.entities.push(bullet);
@@ -245,9 +325,35 @@ export class ShootSystem extends System {
           player instanceof Player2 &&
           level.player2Turn[level.playerTurnCurrentIndex].shoot === true
         ) {
-          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 20);
+          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 15);
           bullet.addComponents(
-            new Vector(norm.x * 1000, norm.y * 1000),
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        }
+
+        if (
+          player instanceof Player3 &&
+          level.player3Turn[level.playerTurnCurrentIndex].shoot === true
+        ) {
+          const bullet = new OwlySkott({ x: startPos.x, y: startPos.y }, 15);
+          bullet.addComponents(
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        }
+
+        if (
+          player instanceof Player4 &&
+          level.player4Turn[level.playerTurnCurrentIndex].shoot === true
+        ) {
+          const bullet = new CrustlingSkott({ x: startPos.x, y: startPos.y }, 15);
+          bullet.addComponents(
+            new Vector(norm.x * 2500, norm.y * 2500),
             new CircleHitbox()
           );
 
@@ -258,22 +364,51 @@ export class ShootSystem extends System {
           console.log(level.player1Turn);
           level.player1Turn[level.player1Turn.length - 1].shoot = true;
 
-          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 20);
+          const bullet = new PlasmaBullet({ x: startPos.x, y: startPos.y }, 15);
           bullet.addComponents(
-            new Vector(norm.x * 1000, norm.y * 1000),
-            new CircleHitbox()
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox(),
+///         new LightSource()
           );
 
           level.entities.push(bullet);
+
         } else if (
           player instanceof Player2 &&
           level.levelState === "PLAYER_2_TURN"
         ) {
           level.player2Turn[level.player2Turn.length - 1].shoot = true;
 
-          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 20);
+          const bullet = new IckyBullet({ x: startPos.x, y: startPos.y }, 15);
           bullet.addComponents(
-            new Vector(norm.x * 1000, norm.y * 1000),
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+          
+        } else if (
+          player instanceof Player3 &&
+          level.levelState === "PLAYER_3_TURN"
+        ) {
+          level.player3Turn[level.player3Turn.length - 1].shoot = true;
+
+          const bullet = new OwlySkott({ x: startPos.x, y: startPos.y }, 15);
+          bullet.addComponents(
+            new Vector(norm.x * 2500, norm.y * 2500),
+            new CircleHitbox()
+          );
+
+          level.entities.push(bullet);
+        } else if (
+          player instanceof Player4 &&
+          level.levelState === "PLAYER_4_TURN"
+        ) {
+          level.player4Turn[level.player4Turn.length - 1].shoot = true;
+
+          const bullet = new CrustlingSkott({ x: startPos.x, y: startPos.y }, 15);
+          bullet.addComponents(
+            new Vector(norm.x * 2500, norm.y * 2500),
             new CircleHitbox()
           );
 
@@ -288,6 +423,7 @@ export class ShootSystem extends System {
       this.nearestIntersections = nearestIntersections;
     }
   }
+
 
   draw(ctx: CanvasRenderingContext2D) {
     for (
@@ -332,7 +468,7 @@ export class ShootSystem extends System {
       ctx.restore();
     }
   }
-
+  
   lineRect(
     x1: number,
     y1: number,

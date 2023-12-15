@@ -59,11 +59,19 @@ export class CollisionSystem extends System {
           }
 
           if (collision) {
-            this.resolveCircleRectCollision(
-              entityWithCircleHitbox,
-              entityWithRectHitbox
-            );
+            if (entityWithCircleHitbox instanceof Bullet) {
+             level.entities = level.entities.filter(
+                (entity) => entity !== entityWithCircleHitbox
+              );
+            } else {
+              this.resolveCircleRectCollision(
+                entityWithCircleHitbox,
+                entityWithRectHitbox
+              );
+            }
           }
+        
+
         }
       }
     }

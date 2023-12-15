@@ -11,10 +11,13 @@ import Entity from "../Entity/Entity";
 import Wall from "../Entity/Wall";
 import Player1 from "../Entity/Player1";
 import Player2 from "../Entity/Player2";
+import Player3 from "../Entity/Player3";
+import Player4 from "../Entity/Player4";
 import RectHitbox from "../Component/RectHitbox";
 import CircleHitbox from "../Component/CircleHitbox";
 import LightSource from "../Component/LightSource";
 import { getDegrees } from "../getDegrees";
+import { Vector } from "../Component/Vector";
 
 export class Level {
   playerSystem = new PlayerSystem();
@@ -27,8 +30,8 @@ export class Level {
   entities: Entity[] = [];
   offsetX = 0;
   offsetY = 0;
-  levelState: "PLAYER_1_TURN" | "PLAYER_2_TURN" | "RESULT" = "PLAYER_1_TURN";
-  playerTurnTimer = 5;
+  levelState: "PLAYER_1_TURN" | "PLAYER_2_TURN" | "PLAYER_3_TURN" | "PLAYER_4_TURN" | "RESULT" = "PLAYER_1_TURN";
+  playerTurnTimer = 15;
   playerTurnCount = 0;
   player1Turn: {
     mousePos: { x: number; y: number };
@@ -40,11 +43,25 @@ export class Level {
     position: { x: number; y: number };
     shoot: boolean;
   }[] = [];
+  player3Turn: {
+    mousePos: { x: number; y: number };
+    position: { x: number; y: number };
+    shoot: boolean;
+  }[] = [];
+  player4Turn: {
+    mousePos: { x: number; y: number };
+    position: { x: number; y: number };
+    shoot: boolean;
+  }[] = [];
   playerTurnCurrentIndex = 0;
   player1CurrentPosition: { x: number; y: number } | null = null;
   player2CurrentPosition: { x: number; y: number } | null = null;
+  player3CurrentPosition: { x: number; y: number } | null = null;
+  player4CurrentPosition: { x: number; y: number } | null = null;
   player1CurrentHealth: number | null = null;
   player2CurrentHealth: number | null = null;
+  player3CurrentHealth: number | null = null;
+  player4CurrentHealth: number | null = null;
   texture: HTMLImageElement | null = null;
 
   constructor(
@@ -137,7 +154,7 @@ export class Level {
                   Math.PI / 2,
                 this.player1CurrentHealth || 3
               );
-              player.addComponents(new RectHitbox(), new LightSource());
+              player.addComponents(new CircleHitbox(), new Vector(0, 0), new LightSource());
               entities.push(player);
             }
             break;
@@ -163,10 +180,64 @@ export class Level {
                   Math.PI / 2,
                 this.player2CurrentHealth || 3
               );
-              player.addComponents(new RectHitbox(), new LightSource());
+              player.addComponents(new CircleHitbox(), new Vector(0, 0), new LightSource());
               entities.push(player);
             }
             break;
+          }
+          case 4: {
+            if (
+              this.levelState === "PLAYER_3_TURN" ||
+              this.levelState === "RESULT"
+            ) {
+              const player = new Player3(
+                this.player3CurrentPosition || {
+                  x: cellSize * index.x + this.offsetX,
+                  y: cellSize * index.y + this.offsetY,
+                },
+                { width: cellSize, height: cellSize },
+                getDegrees(
+                  {
+                    x: cellSize * index.x + this.offsetX,
+                    y: cellSize * index.y + this.offsetY,
+                  },
+                  this.game.mousePos
+                ) +
+                  Math.PI / 2,
+                this.player3CurrentHealth || 3
+              );
+              player.addComponents(new CircleHitbox(), new Vector(0, 0), new LightSource());
+              entities.push(player);
+            }
+            break;
+          }
+
+          case 5: {
+            if (
+              this.levelState === "PLAYER_4_TURN" ||
+              this.levelState === "RESULT"
+            ) {
+              const player = new Player4(
+                this.player4CurrentPosition || {
+                  x: cellSize * index.x + this.offsetX,
+                  y: cellSize * index.y + this.offsetY,
+                },
+                { width: cellSize, height: cellSize },
+                getDegrees(
+                  {
+                    x: cellSize * index.x + this.offsetX,
+                    y: cellSize * index.y + this.offsetY,
+                  },
+                  this.game.mousePos
+                ) +
+                  Math.PI / 2,
+                this.player4CurrentHealth || 3
+              );
+              player.addComponents(new CircleHitbox(), new Vector(0, 0), new LightSource());
+              entities.push(player);
+            }
+            break;
+
           }
           default:
             break;
@@ -229,8 +300,10 @@ export class Level {
 
     if (
       (this.levelState === "PLAYER_1_TURN" ||
-        this.levelState === "PLAYER_2_TURN") &&
-      this.game.gameState === "RUNNING"
+       this.levelState === "PLAYER_2_TURN" ||
+       this.levelState === "PLAYER_3_TURN" ||
+       this.levelState === "PLAYER_4_TURN") &&
+       this.game.gameState === "RUNNING"
     ) {
       this.shootSystem.draw(mainCtx);
       this.lightsourceSystem.draw(shadowCtx);
